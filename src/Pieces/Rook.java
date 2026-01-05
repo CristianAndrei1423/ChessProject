@@ -1,0 +1,49 @@
+package Pieces;
+
+import Utils.Board;
+import Utils.Colors;
+import Utils.Position;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Rook extends Piece{
+    public Rook(Colors color, Position pos) {
+        super(color, pos);
+    }
+
+    @Override
+    public List<Position> getPossibleMoves(Board board) {
+        List<Position> posMoves = new ArrayList<Position>();
+        Position curPos = this.getPosition();
+
+        // are doar directiile 1, 3, 5, 7 -> pe linie dreapta
+        int[] dirs = {1, 3, 5, 7};
+        Position prevPos;
+
+        for(int dir : dirs){
+            // pentru fiecare directie creez o pozitie in aceea directie
+            prevPos = curPos;
+            // crazy ce poti face cu java-u asta VVV
+            while(board.isValidMove(prevPos, prevPos = posDir(prevPos, dir), this)){
+                posMoves.add(prevPos);
+            }
+        }
+
+        return posMoves;
+    }
+
+    @Override
+    public boolean checkForCheck(Board board, Position kingPosition) {
+        int[] dirs = {1, 3, 5, 7};
+
+        List<Piece> pieceList = axesInters(board, kingPosition, dirs);
+
+        return pieceList.contains(this);
+    }
+
+    @Override
+    public char type() {
+        return 'R';
+    }
+}
