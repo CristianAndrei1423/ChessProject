@@ -12,8 +12,8 @@ public class Game {
     Player player, opponent;
     List<Move> moveList;
     Colors currentPlayerColor;
-    int currentPlayerInd;
-    boolean gameStillValid;
+    public int currentPlayerInd;
+    public boolean gameStillValid;
     public int endGameState;
 
     public Game(int gameId){
@@ -21,6 +21,8 @@ public class Game {
         moveList = new ArrayList<Move>();
         board = new Board();
         gameStillValid = true;
+        // indicate a new game
+        currentPlayerInd = -1;
     }
 
     public Game(int gameId, Board board){
@@ -30,45 +32,87 @@ public class Game {
         gameStillValid = true;
     }
 
-    public void start(boolean newGame, Scanner s){
+    public List<Move> getMoveList() {
+        return moveList;
+    }
+
+    public void initalizeBoard(){
+        board.initialize();
+    }
+
+    public void initalizeOwnedPieces(){
+        if(player.pieceColor == Colors.WHITE){
+            for(ChessPair<Position, Piece> cp : board.pieces){
+                if(cp.getValue().getColor() == Colors.WHITE){
+                    player.addOwnedPiece(cp);
+                } else{
+                    opponent.addOwnedPiece(cp);
+                }
+            }
+
+        }
+        else{
+            for(ChessPair<Position, Piece> cp : board.pieces){
+                if(cp.getValue().getColor() == Colors.WHITE){
+                    opponent.addOwnedPiece(cp);
+                } else{
+                    player.addOwnedPiece(cp);
+                }
+            }
+        }
+    }
+
+    public Board getBoard(){
+        return board;
+    }
+
+    public Player getPlayer(){
+        return player;
+    }
+    public Player getOpponent(){
+        return opponent;
+    }
+
+
+    public void start(boolean newGame){
         // incepe un joc nou de sah
         if(newGame){
-            board.initialize();
-            gameStillValid = true;
+            // board.initialize();
+            // gameStillValid = true;
 
             // aici trebuie sa pun in owned pieces
             // pentru fiecare
 
-            if(player.pieceColor == Colors.WHITE){
-                for(ChessPair<Position, Piece> cp : board.pieces){
-                    if(cp.getValue().getColor() == Colors.WHITE){
-                        player.addOwnedPiece(cp);
-                    } else{
-                        opponent.addOwnedPiece(cp);
-                    }
-                }
+//            if(player.pieceColor == Colors.WHITE){
+//                for(ChessPair<Position, Piece> cp : board.pieces){
+//                    if(cp.getValue().getColor() == Colors.WHITE){
+//                        player.addOwnedPiece(cp);
+//                    } else{
+//                        opponent.addOwnedPiece(cp);
+//                    }
+//                }
+//
+//            }
+//            else{
+//                for(ChessPair<Position, Piece> cp : board.pieces){
+//                    if(cp.getValue().getColor() == Colors.WHITE){
+//                        opponent.addOwnedPiece(cp);
+//                    } else{
+//                        player.addOwnedPiece(cp);
+//                    }
+//                }
+//            }
 
-            }
-            else{
-                for(ChessPair<Position, Piece> cp : board.pieces){
-                    if(cp.getValue().getColor() == Colors.WHITE){
-                        opponent.addOwnedPiece(cp);
-                    } else{
-                        player.addOwnedPiece(cp);
-                    }
-                }
-            }
-
-            System.out.println("Game started !");
-
-            currentPlayerInd = 1;
+//            System.out.println("Game started !");
+//
+//              currentPlayerInd = 1;
         }
 
-        System.out.println("Commands : ");
-        System.out.println(" - Get possible moves for piece : (Position)");
-        System.out.println(" - Move piece (fromPosition-toPosition)");
-        System.out.println(" - Forfeit (ff)");
-        System.out.println(" - Leave game (leave)");
+//        System.out.println("Commands : ");
+//        System.out.println(" - Get possible moves for piece : (Position)");
+//        System.out.println(" - Move piece (fromPosition-toPosition)");
+//        System.out.println(" - Forfeit (ff)");
+//        System.out.println(" - Leave game (leave)");
 
         while(true){
             // first check whether it's the player or the opponent's turn
@@ -85,7 +129,9 @@ public class Game {
                 else curPlayer = player;
             }
 
-            System.out.println(board.toString(curPlayer.pieceColor));
+            // System.out.println(board.toString(curPlayer.pieceColor));
+            // update board
+
 
             for(ChessPair<Position, Piece> cp : board.pieces){
                 System.out.print(cp.getValue().toString() + " ");
@@ -101,7 +147,7 @@ public class Game {
             }
             else{
 
-                if(runForPlayer(s))
+                if(runForPlayer())
                     // jocul se continua normal
                     continue;
                 return;
@@ -121,7 +167,7 @@ public class Game {
         return true;
     }
 
-    private boolean runForPlayer(Scanner s){
+    private boolean runForPlayer(){
         // daca functia se termina in
         // true - jocul se continua normal
         // false - jocul s-a terminat sau s-a a fost pus pe pauza (leave)
@@ -129,77 +175,74 @@ public class Game {
         int option = 0;
         String ans;
 
-        while(true){
-            try{
-                ans = s.next();
-                // step 1
-                option = handleInput(ans);
-            } catch (InvalidCommandException e){
-                System.out.println(e);
-                continue;
-            }
-            break;
-        }
+//        while(true){
+//            try{
+//                ans = s.next();
+//                // step 1
+//                option = handleInput(ans);
+//            } catch (InvalidCommandException e){
+//                System.out.println(e);
+//                continue;
+//            }
+//            break;
+//        }
 
         // first check if it is a move
-        if(option == 1){
-            String str = "" + ans.charAt(0) + ans.charAt(1);
-            Position from = new Position();
-            from = from.fromString(str);
-            Position to = new Position();
-            str = "" + ans.charAt(3) + ans.charAt(4);
-            to = to.fromString(str);
-
-            if(to != null && from != null && board.getPieceAt(from) != null &&
-                    board.isValidMove(from, to, board.getPieceAt(from)) &&
-                    board.getPieceAt(from).getColor() == player.pieceColor) {
-                // moveList.add(board.movePiece(from, to, curPlayer));
-                try{
-                    player.makeMove(from, to, board, this, opponent);
-                } catch (InvalidMoveException e){
-                    // aici nu se poate intampla nimic
-                    // pentru ca deja miscarea e validata ca fiind corecta
-                    System.out.println(e);
-                    return runForPlayer(s);
-                }
-                // daca e sah mat dupa runda playerului curent inseamna
-                // logic ca el a facut o mutare care l-a pus pe oponent
-                // in mat
-                if(checkForCheckMate(opponent)){
-                    handleEndOfGame(2);
-                    return false;
-                }
-
-                switchPlayer();
-            }
-            else{
-                System.out.println("Invalid move");
-                return runForPlayer(s);
-            }
-        }
-
-        // then check if the user wants to see possible moves
-        if(option == 2){
-            // if the user provide something outrageous it is just
-            // discarded as an invalid position
-
-            Position pos = Position.fromString(ans);
-
-            Piece ps = board.getPieceAt(pos);
-
-            if(ps == null)
-                System.out.println("Invalid piece");
-
-
-            List<Position> posMoves = ps.getPossibleMoves(board);
-
-            System.out.println("Possible moves for " + ps.type());
-
-            for(Position i : posMoves){
-                System.out.print(i.toString() + " ");
-            }
-            System.out.println();
-        }
+//        if(option == 1){
+//            String str = "" + ans.charAt(0) + ans.charAt(1);
+//            Position from = new Position();
+//            from = from.fromString(str);
+//            Position to = new Position();
+//            str = "" + ans.charAt(3) + ans.charAt(4);
+//            to = to.fromString(str);
+//
+//            if(to != null && from != null && board.getPieceAt(from) != null &&
+//                    board.isValidMove(from, to, board.getPieceAt(from)) &&
+//                    board.getPieceAt(from).getColor() == player.pieceColor) {
+//                // moveList.add(board.movePiece(from, to, curPlayer));
+//                try{
+//                    player.makeMove(from, to, board, this, opponent);
+//                } catch (InvalidMoveException e){
+//                    // aici nu se poate intampla nimic
+//                    // pentru ca deja miscarea e validata ca fiind corecta
+//                    System.out.println(e);
+//                    return runForPlayer(s);
+//                }
+//                // daca e sah mat dupa runda playerului curent inseamna
+//                // logic ca el a facut o mutare care l-a pus pe oponent
+//                // in mat
+//
+//
+//                switchPlayer();
+//            }
+//            else{
+//                System.out.println("Invalid move");
+//                return runForPlayer(s);
+//            }
+//        }
+//
+//        // then check if the user wants to see possible moves
+//        if(option == 2){
+//            // if the user provide something outrageous it is just
+//            // discarded as an invalid position
+//
+//            Position pos = Position.fromString(ans);
+//
+//            Piece ps = board.getPieceAt(pos);
+//
+//            if(ps == null)
+//                System.out.println("Invalid piece");
+//
+//
+//            List<Position> posMoves = ps.getPossibleMoves(board);
+//
+//            System.out.println("Possible moves for " + ps.type());
+//
+//            for(Position i : posMoves){
+//                System.out.print(i.toString() + " ");
+//            }
+//            System.out.println();
+//        }
 
         // then if player wants to ff
         if(option == 3){
@@ -214,6 +257,17 @@ public class Game {
         }
 
         return true;
+    }
+
+    public void handleMove(Move move) {
+        Piece ps = board.getPieceAt(move.getFrom());
+
+        Player p = (ps.getColor() == player.pieceColor ? player : opponent);
+        Player o = (ps.getColor() == player.pieceColor ? opponent : player);
+
+        p.makeMove(move.getFrom(), move.getTo(), board, this, o);
+
+
     }
 
     private boolean runForComputer(){
@@ -239,13 +293,7 @@ public class Game {
         int ind = rand.nextInt(possibleMoves.size());
         Move move = possibleMoves.get(ind);
 
-        try{
-            opponent.makeMove(move.getFrom(), move.getTo(), board, this, player);
-        } catch (InvalidMoveException e){
-            // aici nu se poate intampla nimic
-            // pentru ca deja miscarea e validata ca fiind corecta
-            System.out.println("ERROR");
-        }
+        opponent.makeMove(move.getFrom(), move.getTo(), board, this, player);
 
         // si daca prin miracol ajunge sa ti dea mat
         // pe langa ca esti cam praf
@@ -266,14 +314,14 @@ public class Game {
         return true;
     }
 
-    public void resume(Scanner s){
-
-        if (this.currentPlayerColor == Colors.WHITE) this.currentPlayerInd = 1;
-        else this.currentPlayerInd = 0;
-
-        System.out.println("Resumed game with index "+ this.gameId);
-        start(false, s);
-    }
+//    public void resume(Scanner s){
+//
+//        if (this.currentPlayerColor == Colors.WHITE) this.currentPlayerInd = 1;
+//        else this.currentPlayerInd = 0;
+//
+//        System.out.println("Resumed game with index "+ this.gameId);
+//        start(false, s);
+//    }
 
     public void switchPlayer(){
         currentPlayerInd++;
@@ -332,6 +380,16 @@ public class Game {
         // -1 - playerul a dat ff
         // -2 - playerul a pierdut prin mat
         endGameState = state;
+    }
+
+    public void handleExitGame(Game game){
+        Main.getChessGame().write();
+
+        if(game.gameStillValid){
+            Main.getChessGame().gameMap.remove(Main.getChessGame().lastGameId-1);
+            Main.getChessGame().gameMap.put(Main.getChessGame().lastGameId-1, game);
+        }
+        else Main.getChessGame().handleEndGame(game);
     }
 
     @Override

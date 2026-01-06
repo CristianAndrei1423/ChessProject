@@ -78,7 +78,8 @@ public class Pawn extends Piece {
 
         List<Piece> pieceList = axesInters(board, kingPosition, dirs);
 
-        return pieceList.contains(this);
+        // if the found piece is a pawn and the distance between the pawn and the king is 1 then it's checked
+        return pieceList.contains(this) && Position.trajectory(this.getPosition(), kingPosition).size() == 1;
     }
 
     @Override

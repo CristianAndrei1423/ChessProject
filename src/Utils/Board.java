@@ -214,28 +214,18 @@ public class Board {
                 for (Piece ps : intersPieces) {
                     if(ps != null && ps.getColor() != piece.getColor()){
                         if(ps instanceof King){
-                            // daca nu fac ceva aici imi iau mozol
-                            // daca esti prea aproape nu e bine (stinky)
+                            // check if the kings have enough distance between one another
                             if(Position.trajectory(ps.getPosition(), to).size() <= 2)
                                 return false;
                         }
                         else {
-                            List<Position> pos = ps.getPossibleMoves(this);
-                            if (pos.contains(to))
+                            // checks the possible moves for each of the opponent's pieces
+                            if(ps.checkForCheck(this, to))
                                 return false;
+
                         }
                     }
                 }
-
-                // trb sa vezi si calutii
-                for(ChessPair<Position, Piece> cp : pieces){
-                    if(cp.getValue() instanceof Knight && cp.getValue().getColor() != piece.getColor())
-                    {
-                        if(cp.getValue().getPossibleMoves(this).contains(to))
-                            return false;
-                    }
-                }
-
             }
             else {
                 // trasez 8 linii de la rege si vad daca se intersecteaza o
@@ -276,7 +266,6 @@ public class Board {
                 }
             }
             // - sau daca esti deja in sah :
-
             List<ChessPair<Position, Piece>> checkingPieces = new ArrayList<ChessPair<Position, Piece>>();
 
             for(ChessPair<Position, Piece> ps : pieces)
@@ -316,7 +305,6 @@ public class Board {
                     if(piece.getColor() == Colors.WHITE && dir == 7)
                         return false;
                 }
-
                 return getPieceAt(to).getColor() != piece.getColor();
             }
 

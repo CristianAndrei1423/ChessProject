@@ -1,0 +1,1 @@
+[{"players":[{"color":"BLACK","email":"ana@example.com"},{"color":"WHITE","email":"computer"}],"moves":[],"id":1,"currentPlayerColor":"BLACK","board":[{"color":"BLACK","position":"F5","type":"P"},{"color":"BLACK","position":"H4","type":"Q"},{"color":"WHITE","position":"E4","type":"N"},{"color":"WHITE","position":"D4","type":"K"},{"color":"BLACK","position":"A1","type":"K"}]}]

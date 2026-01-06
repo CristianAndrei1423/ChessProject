@@ -2,25 +2,41 @@ package Utils;
 
 import Exceptions.InvalidCommandException;
 import Pieces.Piece;
+import UIPanels.MainFrame;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
 
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.List;
 
 public class Main {
 
     List<User> userList;
-    Map<Integer, Game> gameMap;
-    User currentUser;
-    int lastGameId;
+    public Map<Integer, Game> gameMap;
+    public User currentUser;
+    public int lastGameId;
+    private static Main ChessGame;
 
-    public Main(){
+    private Main(){
         userList = new ArrayList<User>();
         gameMap = new HashMap<Integer, Game>();
         currentUser = null;
         lastGameId = 0;
+    }
+
+    // singleton pattern
+    public static Main getChessGame(){
+        // lazy initialization
+        if(ChessGame == null)
+            ChessGame = new Main();
+        return ChessGame;
     }
 
     public void read () throws IOException, ParseException {
@@ -29,7 +45,7 @@ public class Main {
 
         // mai intai citesti jocurile gameMap
 
-        Path path = Path.of("src", "Teste", "TestWrite", "games.json");
+        Path path = Path.of("src", "Teste", "TesteIndividuale", "games.json");
         System.out.println("Path of games : " + path.toAbsolutePath());
 
         gameMap = JsonReaderUtil.readGamesAsMap(path);
@@ -46,7 +62,7 @@ public class Main {
 
         // dupa citesti userii si pentru fiecare user
         // trebuie sa te uiti in activeGamesGIDS pentru a le pune in lista de jocuri ale userilor
-        path = Path.of("src", "Teste", "TestWrite", "accounts.json");
+        path = Path.of("src", "Teste", "TesteIndividuale", "accounts.json");
         System.out.println("Path of accounts : " + path.toAbsolutePath());
         userList = JsonReaderUtil.readAccounts(path);
 
@@ -129,7 +145,8 @@ public class Main {
                 ans.add(ps.getValue());
             }
         } else{
-            System.out.println("EROAREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+            // TODO : vezi de ce se intampla asta
+            System.out.println("ERROR : when reading, both boards are empty");
         }
         return ans;
     }
@@ -138,8 +155,8 @@ public class Main {
         /// scrie in fisierele JSON starea curenta a util si a jocurilor
         //ex : puncte, jocuri noi, jocuri sterse etc
 
-        Path pathGames = Path.of("src", "Teste", "TestWrite", "games.json");
-        Path pathAcc = Path.of("src", "Teste", "TestWrite", "accounts.json");
+        Path pathGames = Path.of("src", "Teste", "TestOutputStd", "games.json");
+        Path pathAcc = Path.of("src", "Teste", "TestOutputStd", "accounts.json");
 
         try{
             JsonWriterUtil.writeAccounts(pathAcc, userList);
@@ -182,283 +199,10 @@ public class Main {
     }
 
     public void run(){
-        // porneste flowul aplicatiei:
-        // - gestioneaza procesul de auth
-        // - afiseaza meniul princ si permite util sa aleaga intre inceperea unui joc nou, cont unui joc
-        // existent sau delogare
-
-        UI.clearScreen();
-        String ans;
-        Scanner s = new Scanner(System.in);
-
-        if(currentUser == null) {
-
-            System.out.println("Welcome to ChessGame, homework for course Object Oriented Programming");
-
-            // step 1
-            while (true) {
-                System.out.println("Please login (1) or make a new account (2)\n");
-                ans = s.next();
-                try {
-                    handleInput(ans, 1);
-                } catch (InvalidCommandException e) {
-                    System.out.println(e);
-                    continue;
-                }
-                break;
-            }
-
-            UI.clearScreen();
-            User user = null;
-            if (ans.equals("1")) {
-                // login
-                while (user == null) {
-
-                    System.out.println("Please enter your email (q to quit to main menu)");
-                    String email = s.next();
-                    if (email.equals("q")) {
-                        run();
-                        return;
-                    }
-                    System.out.println("Please enter your password : ");
-                    String pass = s.next();
-
-                    user = login(email, pass);
-                    if (user == null)
-                        System.out.println("Incorrect password\n");
-                }
-            }
-            else {
-                // make new account
-                while (true) {
-                    System.out.println("Please enter your email (q to quit to main menu)");
-                    String email = s.next();
-                    if (email.equals("q")) {
-                        run();
-                        return;
-                    }
-
-                    if (!UI.checkOkEmail(email)) {
-                        System.out.println("Please provide a valid email");
-                        continue;
-                    }
-
-                    String pass;
-
-                    while (true) {
-                        System.out.println("Please enter you password : ");
-                        pass = s.next();
-
-                        System.out.println("Please re-enter your password : ");
-                        String pass2 = s.next();
-
-                        if (pass.equals(pass2))
-                            break;
-
-                        UI.clearScreen();
-                        System.out.println("Password is not the same");
-                    }
-                    user = newAccount(email, pass, 0);
-
-                    if (user != null) {
-                        break;
-                    }
-
-                    UI.clearScreen();
-
-                    System.out.println("Email is already in use, please provide a different email or login with this email");
-                }
-            }
-
-            currentUser = user;
-            UI.clearScreen();
-
-            System.out.println("Welcome " + currentUser.getEmail() + "!");
-        }
-
-        while(true) {
-
-            try{
-                System.out.println("Menu :");
-                System.out.println("(1) Start new game");
-                System.out.println("(2) Games in progress");
-                System.out.println("(3) Log out");
-
-                ans= s.next();
-                // step 2
-                handleInput( ans, 2);
-            } catch(InvalidCommandException e){
-                UI.clearScreen();
-                System.out.println(e);
-                continue;
-            }
-
-            UI.clearScreen();
-
-            if (ans.equals("1")) {
-                System.out.println("Provide an alias for you : ");
-                String alias = s.next();
-
-                Colors color = Colors.GRAY;
-
-                while(true) {
-
-                    // step 3
-                    String colorS;
-                    try{
-                        System.out.println("Provide the color you want to play with (BLACK or WHITE) ");
-                        colorS = s.next();
-
-                        handleInput(colorS, 3);
-                    } catch (InvalidCommandException e){
-                        System.out.println(e);
-                        continue;
-                    }
-
-                    if(colorS.equals("BLACK"))
-                        color = Colors.BLACK;
-                    else color = Colors.WHITE;
-                    break;
-                }
-
-                UI.clearScreen();
-
-                Player player = new Player(currentUser.getEmail(), color);
-
-                Colors opColor = (color == Colors.BLACK ? Colors.WHITE : Colors.BLACK);
-
-                Player opp = new Player("computer", opColor);
-
-                // make game
-
-                Game game = new Game(lastGameId); // aici se initializeaza si board
-                currentUser.addGID(lastGameId);
-
-                lastGameId++;
-
-                List<Player> players = new ArrayList<Player>();
-                players.add(player);
-                players.add(opp);
-                game.setPlayers(players);
-
-                game.setCurrentPlayerColor(color);
-
-                currentUser.addGame(game);
-
-                gameMap.put(lastGameId-1, game);
-
-                game.start(true, s);
-
-                write();
-
-                if(game.gameStillValid){
-                    gameMap.remove(lastGameId-1);
-                    gameMap.put(lastGameId-1, game);
-                    continue;
-                }
-                else handleEndGame(game);
-
-            }
-            else if (ans.equals("2")) {
-
-                System.out.println("Available games :");
-
-                List<Game> gameList = currentUser.getActiveGames();
-
-                if(gameList.isEmpty()){
-                    System.out.println("No games to show");
-                    continue;
-                }
-                else{
-                    for(Game game : gameList){
-                        if(game != null)
-                            System.out.println(game.toString() + "\n");
-                    }
-                }
-                Game queriedGame = null;
-                while(true) {
-
-                    System.out.println("Select a game with gameID (-1 to go back to main menu)");
-                    ans = s.next();
-
-                    try{
-                        //step 4
-                        handleInput(ans, 4);
-                    } catch(InvalidCommandException e){
-                        System.out.println(e);
-                        continue;
-                    }
-
-
-                    if(ans.equals("-1"))
-                        break;
-
-                    for (Game game : gameList) {
-                        if (game != null && ans.equals("" + game.gameId)) {
-                            queriedGame = game;
-                            break;
-                        }
-                    }
-
-                    if (queriedGame == null) {
-                        System.out.println("The game id you have provided has no games associated with it");
-                        continue;
-                    }
-                    break;
-                }
-
-                if(ans.equals("-1"))
-                    continue;
-
-
-                while(true){
-                    try{
-                        System.out.println("What do you wish to do :");
-                        System.out.println("(1) See details");
-                        System.out.println("(2) Continue game");
-                        System.out.println("(3) Delete game");
-
-                        ans = s.next();
-
-                        //step 5
-                        handleInput(ans, 5);
-                    } catch (InvalidCommandException e){
-                        System.out.println(e);
-                        continue;
-                    }
-                    break;
-                }
-
-                if(ans.equals("1")){
-                    System.out.println(queriedGame.board.toString(queriedGame.player.pieceColor));
-
-                }
-                else if(ans.equals("2")){
-                    queriedGame.resume(s);
-                    if(queriedGame.gameStillValid){
-                        gameMap.remove(queriedGame.gameId);
-                        gameMap.put(queriedGame.gameId, queriedGame);
-                    }
-                    else handleEndGame(queriedGame);
-
-                } else {
-                    gameList.remove(queriedGame);
-                }
-
-                write();
-            }
-            else {
-                // log out
-                currentUser = null;
-                run();
-                write();
-                return;
-            }
-        }
-
+        MainFrame.gameFrame = new MainFrame();
     }
 
-    private void handleEndGame(Game game) {
+    public void handleEndGame(Game game) {
         switch(game.endGameState) {
             case 2:{
                 System.out.println("Playerul a castigat prin mat");
@@ -540,11 +284,9 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException, ParseException, InterruptedException {
-        Main ChessGame = new Main();
-        ChessGame.read();
+        Main.getChessGame().read();
 
-        ChessGame.run();
-        ChessGame.write();
+        Main.getChessGame().run();
+        Main.getChessGame().write();
     }
 }
-

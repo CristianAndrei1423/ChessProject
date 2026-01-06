@@ -35,7 +35,7 @@ public class Queen extends Piece{
 
     @Override
     public boolean checkForCheck(Board board, Position kingPosition) {
-        int[] dirs = {0, 1, 2, 3, 4, 5, 6, 7}; // in diagonale
+        int[] dirs = {0, 1, 2, 3, 4, 5, 6, 7};
 
         List<Piece> pieceList = axesInters(board, kingPosition, dirs);
 

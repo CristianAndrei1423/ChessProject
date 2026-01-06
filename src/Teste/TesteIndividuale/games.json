@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "players": [
+      {
+        "email": "computer",
+        "color": "WHITE"
+      },
+      {
+        "email": "ana@example.com",
+        "color": "BLACK"
+      }
+    ],
+    "currentPlayerColor": "BLACK",
+    "board": [
+      {
+        "type": "K",
+        "color": "WHITE",
+        "position": "D4"
+      },
+      {
+        "type": "N",
+        "color": "WHITE",
+        "position": "E4"
+      },
+      {
+        "type": "K",
+        "color": "BLACK",
+        "position": "A1"
+      },
+      {
+        "type": "P",
+        "color": "BLACK",
+        "position": "F5"
+      },
+      {
+        "type": "Q",
+        "color": "BLACK",
+        "position": "H4"
+      }
+    ],
+    "moves": []
+  }
+]

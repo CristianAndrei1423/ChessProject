@@ -9,7 +9,7 @@ import java.util.TreeSet;
 
 public class Player {
     String name;
-    Colors pieceColor;
+    public Colors pieceColor;
     private List<Piece> capturedPieces;
     private TreeSet<ChessPair<Position, Piece>> ownedPieces;
     private int points;
@@ -22,16 +22,9 @@ public class Player {
         points = 0;
     }
 
-    public void makeMove(Position from, Position to, Board board, Game game, Player opp) throws InvalidMoveException {
+    public void makeMove(Position from, Position to, Board board, Game game, Player opp) {
         Move move = board.movePiece(from, to, this, opp);
-
-        if(move != null){
-            // punctajul jucatorului este updatat din movePiece
-            game.moveList.add(move);
-        }
-        else{
-            throw new InvalidMoveException("Invalid move from " + from.toString() + " to " + to.toString());
-        }
+        game.moveList.add(move);
 
     }
 
