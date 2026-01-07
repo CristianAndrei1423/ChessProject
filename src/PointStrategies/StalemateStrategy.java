@@ -1,13 +1,12 @@
 package PointStrategies;
 
 import UIPanels.MainFrame;
-import Utils.Game;
 
 public class StalemateStrategy implements PointsStrategy{
     @Override
     public int pointsDeducted() {
-        System.out.println("Jocul s-a terminat prin remiza");
-        MainFrame.GamePanel.endOfGameLabelState.setText("Jocul s-a terminat prin remiza, +150 puncte");
+        System.out.println("Game has ended in a stalemate");
+        MainFrame.GamePanel.endOfGameLabelState.setText("Game has ended in a stalemate, +150 points");
         return 150;
     }
 }

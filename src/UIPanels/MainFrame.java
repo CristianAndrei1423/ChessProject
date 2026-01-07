@@ -4,25 +4,20 @@ import Utils.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.lang.classfile.attribute.LineNumberInfo;
 
 
 public class MainFrame extends JFrame {
     private static CardLayout cardLayout;
     private static JPanel mainPanel;
     public static GamePanel GamePanel;
-    private JPanel LoginPanel;
     private static MainMenuPanel MainMenuPanel;
-    private JPanel SignUpPanel;
     private static GameMakePanel GameMakePanel;
     public static MainFrame gameFrame;
     public static GameExplorerPanel GameExplorerPanel;
 
-    public static void main(String[] args){
+    public static void main(){
         gameFrame = new MainFrame();
     }
-
-    // TODO : refine UI
 
     public MainFrame() {
         setTitle("ChessMaster");
@@ -33,18 +28,18 @@ public class MainFrame extends JFrame {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
-        LoginPanel = new LoginPanel(this);
+        JPanel loginPanel = new LoginPanel(this);
         MainMenuPanel = new MainMenuPanel(this);
         GamePanel = new GamePanel(null);
-        SignUpPanel = new SignUpPanel(this);
-        GameMakePanel = new GameMakePanel(this);
+        JPanel signUpPanel = new SignUpPanel(this);
+        GameMakePanel = new GameMakePanel();
         GameExplorerPanel = new GameExplorerPanel();
 
         // add the screens
-        mainPanel.add(LoginPanel, "LOGIN");
+        mainPanel.add(loginPanel, "LOGIN");
         mainPanel.add(MainMenuPanel, "MENU");
         mainPanel.add(GamePanel, "GAME");
-        mainPanel.add(SignUpPanel, "SIGNUP");
+        mainPanel.add(signUpPanel, "SIGNUP");
         mainPanel.add(GameMakePanel, "NEWGAME");
         mainPanel.add(GameExplorerPanel, "GAMEEXPLORER");
 
@@ -59,18 +54,17 @@ public class MainFrame extends JFrame {
         if(cardName.equals("GAME")){
 
             if(GameExplorerPanel.gameToBeContinued != null){
-
+                // if the game is continued :
                 Game game = GameExplorerPanel.gameToBeContinued;
                 game.currentPlayerInd = game.getPlayer().pieceColor == Colors.WHITE ? 1 : 2;
                 GamePanel.endOfGameLabelState.setVisible(false);
                 GamePanel.currentGame = game;
                 GamePanel.isWhiteView = GamePanel.currentGame.getPlayer().pieceColor == Colors.WHITE;
                 GamePanel.updatePiecesVisual(game.getBoard());
-                System.out.println("Game started !");
+                System.out.println("Game continued !");
                 GameExplorerPanel.gameToBeContinued = null;
                 GamePanel.updateHistoryArea();
                 GamePanel.updateCapturedPieces();
-
             }
             else {
                 // initialize game within panel then use game
@@ -106,9 +100,7 @@ public class MainFrame extends JFrame {
             }
         }
 
-        if(cardName.equals("GAMEEXPLORER")){
-            GameExplorerPanel.refreshGameList();
-        }
+        if(cardName.equals("GAMEEXPLORER")) GameExplorerPanel.refreshGameList();
 
         cardLayout.show(mainPanel, cardName);
     }

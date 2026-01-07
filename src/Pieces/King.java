@@ -5,9 +5,6 @@ import Utils.Board;
 import Utils.Colors;
 import Utils.Position;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class King extends Piece{
     public King(Colors color, Position pos) {
         super(color, pos, new KingMoveStrategy());
@@ -15,7 +12,7 @@ public class King extends Piece{
 
     @Override
     public boolean checkForCheck(Board board, Position kingPosition) {
-        // nu poti da check cu regele altui rege
+        // you can't check a king with another king
         return false;
     }
 

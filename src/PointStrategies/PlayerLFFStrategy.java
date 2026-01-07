@@ -1,13 +1,12 @@
 package PointStrategies;
 
 import UIPanels.MainFrame;
-import Utils.Game;
 
 public class PlayerLFFStrategy implements PointsStrategy{
     @Override
     public int pointsDeducted() {
-        System.out.println("Jocul s-a terminat prin ff din partea jucatorului");
-        MainFrame.GamePanel.endOfGameLabelState.setText("Ai pierdut prin ff, -150 de puncte");
+        System.out.println("Game has ended from player forfeit");
+        MainFrame.GamePanel.endOfGameLabelState.setText("You lost from ff, -150 points");
         return -150;
     }
 }

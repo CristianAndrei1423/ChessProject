@@ -11,13 +11,12 @@ import java.util.List;
 
 
 public class GameMakePanel extends JPanel implements GameMakeObserver {
-    private JRadioButton white;
-    private JRadioButton black;
-    private JTextArea alias;
+    private final JRadioButton white;
+    private final JTextArea alias;
 
     public Game gameMade;
 
-    public GameMakePanel(MainFrame frame) {
+    public GameMakePanel() {
         setLayout(new GridBagLayout());
         setBackground(new Color(20, 25, 40));
 
@@ -31,7 +30,7 @@ public class GameMakePanel extends JPanel implements GameMakeObserver {
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 
         white = new JRadioButton("White");
-        black = new JRadioButton("Black");
+        JRadioButton black = new JRadioButton("Black");
 
         ButtonGroup group = new ButtonGroup();
         group.add(white);
@@ -45,7 +44,12 @@ public class GameMakePanel extends JPanel implements GameMakeObserver {
         JButton startGame = new JButton("Start game");
         startGame.setBackground(Color.GREEN);
 
-        startGame.addActionListener(new NewGameHandler());
+        startGame.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MainFrame.showCard("GAME");
+            }
+        });
 
         content.add(new JLabel("Provide an alias for you"));
         content.add(alias);
@@ -55,13 +59,6 @@ public class GameMakePanel extends JPanel implements GameMakeObserver {
         content.add(startGame);
 
         add(content);
-    }
-
-    private class NewGameHandler implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e){
-            MainFrame.showCard("GAME");
-        }
     }
 
     @Override
@@ -76,18 +73,16 @@ public class GameMakePanel extends JPanel implements GameMakeObserver {
 
         // make game
 
-        Game game = new Game(Main.getChessGame().lastGameId); // aici se initializeaza si board
+        // here board is initialized too
+        Game game = new Game(Main.getChessGame().lastGameId);
         Main.getChessGame().currentUser.addGID(Main.getChessGame().lastGameId);
 
         Main.getChessGame().lastGameId++;
 
-        List<Player> players = new ArrayList<Player>();
+        List<Player> players = new ArrayList<>();
         players.add(player);
         players.add(opp);
         game.setPlayers(players);
-
-        // not good because if the player is color black, it makes a bug
-        // game.setCurrentPlayerColor(color);
 
         Main.getChessGame().currentUser.addGame(game);
 
@@ -96,7 +91,6 @@ public class GameMakePanel extends JPanel implements GameMakeObserver {
         gameMade = game;
 
         gameMade.playerAlias = alias.getText();
-
     }
 
 }

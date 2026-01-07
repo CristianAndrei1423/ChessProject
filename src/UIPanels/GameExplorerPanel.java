@@ -12,10 +12,10 @@ import java.util.List;
 
 public class GameExplorerPanel extends JPanel {
 
-    private JLabel[][] squares;
-    private JPanel gamesButtonPanel;
-    private JLabel topLabel;    // For Computer/Opponent
-    private JLabel bottomLabel; // For Player/User
+    private final JLabel[][] squares;
+    private final JPanel gamesButtonPanel;
+    private final JLabel topLabel;    // For Computer/Opponent
+    private final JLabel bottomLabel; // For Player/User
     public Game gameToBeContinued;
 
     static ImageIcon[] whiteIcons;
@@ -98,14 +98,14 @@ public class GameExplorerPanel extends JPanel {
         rightPanel.setBackground(new Color(20, 25, 40));
         // -------------------------------------------------------------
 
-        // -- Top Label (Opponent) --
+        // top label (Opponent)
         topLabel = new JLabel("Opponent", SwingConstants.CENTER);
         topLabel.setForeground(Color.LIGHT_GRAY);
         topLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         topLabel.setBorder(new EmptyBorder(15, 0, 10, 0));
         rightPanel.add(topLabel, BorderLayout.NORTH);
 
-        // -- The Board --
+        // board
         JPanel boardWrapper = new JPanel(new GridBagLayout());
         boardWrapper.setBackground(new Color(20, 25, 40));
 
@@ -135,7 +135,7 @@ public class GameExplorerPanel extends JPanel {
         boardWrapper.add(board);
         rightPanel.add(boardWrapper, BorderLayout.CENTER);
 
-        // -- Bottom Label (Player) --
+        // bottom label (Player)
         bottomLabel = new JLabel("Player", SwingConstants.CENTER);
         bottomLabel.setForeground(Color.GREEN);
         bottomLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
@@ -157,7 +157,7 @@ public class GameExplorerPanel extends JPanel {
             for (Game g : games) {
                 JButton btn = createGameButton(g, currentUser);
                 gamesButtonPanel.add(btn);
-                gamesButtonPanel.add(Box.createVerticalStrut(10)); // Space between buttons
+                gamesButtonPanel.add(Box.createVerticalStrut(10));
             }
         }
 
@@ -167,12 +167,12 @@ public class GameExplorerPanel extends JPanel {
 
     private JButton createGameButton(Game game, User currentUser) {
         String myEmail = currentUser.getEmail();
-        String p1Name = getPlayerName(game.getPlayer());
-        String p2Name = getPlayerName(game.getOpponent());
+        String p1Name = game.getPlayer().name;
+        String p2Name = game.getOpponent().name;
 
         String opponentName = p1Name.equals(myEmail) ? p2Name : p1Name;
 
-        String text = "<html><center>Game " + game.gameId + "<br/>vs " + opponentName + "</center></html>";
+        String text = "Game " + game.gameId + " vs " + opponentName ;
 
         JButton btn = new JButton(text);
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -182,10 +182,6 @@ public class GameExplorerPanel extends JPanel {
         btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false);
         btn.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        btn.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(60, 70, 90), 1),
-                BorderFactory.createEmptyBorder(5, 10, 5, 10)
-        ));
 
         btn.addActionListener(new ActionListener() {
             @Override
@@ -207,7 +203,7 @@ public class GameExplorerPanel extends JPanel {
         Player me;
         Player opponent;
 
-        String pName = getPlayerName(game.getPlayer());
+        String pName = game.getPlayer().name;
 
         if (pName.equals(currentEmail)) {
             me = game.getPlayer();
@@ -217,35 +213,23 @@ public class GameExplorerPanel extends JPanel {
             opponent = game.getPlayer();
         }
 
-        // Update Labels
         bottomLabel.setText(game.playerAlias + " (" + currentEmail + ")");
-        topLabel.setText(getPlayerName(opponent) + " (computer)");
+        topLabel.setText(opponent.name + " (computer)");
 
-        // Determine Orientation
         boolean isWhiteView = (me.pieceColor == Colors.WHITE);
-
-        // Update Pieces on Board
-        Board boardData = game.getBoard();
 
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
-                // Map visual grid (row,col) to backend Position
+                // map buttons to actual chess board positions
                 Position pos;
-                if (isWhiteView) {
-                    // White View: Top-Left (0,0) is A8
-                    pos = new Position((char) ('A' + col), 8 - row);
-                } else {
-                    // Black View: Top-Left (0,0) is H1
-                    pos = new Position((char) ('H' - col), row + 1);
-                }
 
-                Piece p = boardData.getPieceAt(pos);
+                if (isWhiteView) pos = new Position((char) ('A' + col), 8 - row);
+                else pos = new Position((char) ('H' - col), row + 1);
+
+                Piece p = game.getBoard().getPieceAt(pos);
                 squares[row][col].setIcon(getIconFromPiece(p));
             }
         }
-
-        revalidate();
-        repaint();
     }
 
     private void resetBoardVisuals(){
@@ -254,17 +238,6 @@ public class GameExplorerPanel extends JPanel {
                 squares[row][col].setIcon(empty);
             }
         }
-    }
-
-    private String getPlayerName(Player p) {
-        if (p == null) return "Unknown";
-        String s = p.toString();
-        int start = "Player : ".length();
-        int end = s.indexOf(" as color");
-        if (end > start) {
-            return s.substring(start, end);
-        }
-        return "Unknown";
     }
 
     private void initIcons() {

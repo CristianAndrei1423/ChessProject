@@ -41,10 +41,8 @@ public class Main {
     }
 
     public void read () throws IOException, ParseException {
-        // citeste datele din fisierele de intrare
-        // initializeaza colectiile de utilizatori si jocuri
-
-        // mai intai citesti jocurile gameMap
+        // read from input files
+        // initialize colections of users and games
 
         Path path = Path.of("src", "Teste", "TesteIndividuale", "games.json");
         System.out.println("Path of games : " + path.toAbsolutePath());
@@ -58,11 +56,8 @@ public class Main {
         }
         lastGameId = maxId + 1;
 
-
         System.out.println("Game size = " + lastGameId);
 
-        // dupa citesti userii si pentru fiecare user
-        // trebuie sa te uiti in activeGamesGIDS pentru a le pune in lista de jocuri ale userilor
         path = Path.of("src", "Teste", "TesteIndividuale", "accounts.json");
         System.out.println("Path of accounts : " + path.toAbsolutePath());
         userList = JsonReaderUtil.readAccounts(path);
@@ -94,9 +89,7 @@ public class Main {
                         }
                     }
 
-
-                    // pune pentru jucatorul jocului aferent punctele care trebuiesc
-                    // de asemenea captured pieces
+                    // for each player of game but coresponding points
                     if (game.board.pieces.size() != 32) {
                         Board newBoard = new Board();
                         newBoard.initialize();
@@ -146,15 +139,13 @@ public class Main {
                 ans.add(ps.getValue());
             }
         } else{
-            // TODO : vezi de ce se intampla asta
             System.out.println("ERROR : when reading, both boards are empty");
         }
         return ans;
     }
 
     public void write(){
-        /// scrie in fisierele JSON starea curenta a util si a jocurilor
-        //ex : puncte, jocuri noi, jocuri sterse etc
+        /// write in JSON files the state of games
 
         Path pathGames = Path.of("src", "Teste", "TestOutputStd", "games.json");
         Path pathAcc = Path.of("src", "Teste", "TestOutputStd", "accounts.json");
@@ -169,8 +160,7 @@ public class Main {
     }
 
     public User login(String email, String password) {
-        // cauta in colectia interna utilizatorul care are credentialele
-        // daca reuseste seteaza utilizatorul curent si returneaza obiectul User coresp
+        // search in the internal collection of user the credentials
 
         for(User user : userList){
             if(user.getEmail().equals(email)){
@@ -221,51 +211,6 @@ public class Main {
         MainFrame.GamePanel.endOfGameLabelState.setVisible(true);
         gameMap.remove(game.gameId);
         currentUser.removeGame(game);
-    }
-
-    private void handleInput(String in, int step) throws InvalidCommandException{
-
-        switch (step){
-            case 1:{
-                if(in.equals("1") || in.equals("2"))
-                    return;
-                throw new InvalidCommandException("Comanda invalida");
-            }
-
-            case 2:{
-                if(in.equals("1") || in.equals("2") || in.equals("3"))
-                    return;
-                throw new InvalidCommandException("Please select a valid option");
-            }
-
-            case 3:{
-                if(in.equals("BLACK") || in.equals("WHITE"))
-                    return;
-                throw new InvalidCommandException("Please provide a valid color");
-            }
-
-            case 4:{
-                int ans = 0;
-                try {
-                    ans = Integer.parseInt(in);
-                } catch (NumberFormatException e) {
-                    throw new InvalidCommandException("Please provide a valid index");
-                }
-
-                if(ans < 0 && ans !=-1)
-                    throw new InvalidCommandException("Please provde a valid index");
-
-                return;
-            }
-
-            case 5:{
-                if(in.equals("1") || in.equals("2") || in.equals("3"))
-                    return;
-                throw new InvalidCommandException("Please provide a valid choice");
-            }
-
-        }
-
     }
 
     public static void main(String[] args) throws IOException, ParseException, InterruptedException {

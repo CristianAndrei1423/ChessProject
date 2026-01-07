@@ -14,54 +14,51 @@ public class PawnMoveStrategy implements MoveStrategy{
     @Override
     public List<Position> getPossibleMoves(Board board, Position from) {
 
-        List<Position> posMoves = new ArrayList<Position>();
-        Position curPos = from;
+        List<Position> posMoves = new ArrayList<>();
         Position nextPos;
         Piece curPiece = board.getPieceAt(from);
 
-        // Trebuie sa vad ce culoare este
         if(curPiece.getColor() == Colors.BLACK){
-            // aici trebuie sa ma uit si daca e ceva in fata lui unde vrea sa mearga
-            // ca nu poate sa captureze piese din fata lui naiba
-            if(board.isValidMove(curPos, nextPos = posDir(curPos, 3), curPiece) &&
+            // need to see if something in front because it can't be captured
+            if(board.isValidMove(from, nextPos = posDir(from, 3), curPiece) &&
                     board.getPieceAt(nextPos) == null){
                 posMoves.add(nextPos);
-                // doar daca se poate misca cu unu in fata se poate misca cu 2 in fata
-                if(board.isValidMove(curPos, nextPos = posDir(nextPos, 3), curPiece) &&
-                        board.getPieceAt(nextPos) == null && curPos.y == 7){
+                // only if it can move 1 step in front, can it move 2 steps in front
+                if(board.isValidMove(from, nextPos = posDir(nextPos, 3), curPiece) &&
+                        board.getPieceAt(nextPos) == null && from.y == 7){
                     posMoves.add(nextPos);
                 }
             }
-            // vad daca in diagonale sunt piese, si daca le pot captura
+            // see if there are pieces on the diagonal that can be captured
             Piece ps;
-            if((ps = board.getPieceAt(nextPos = posDir(curPos, 2))) != null &&
-                    board.isValidMove(curPos, nextPos, curPiece) && ps.getColor() != curPiece.getColor())
+            if((ps = board.getPieceAt(nextPos = posDir(from, 2))) != null &&
+                    board.isValidMove(from, nextPos, curPiece) && ps.getColor() != curPiece.getColor())
                 posMoves.add(nextPos);
 
-            if((ps = board.getPieceAt(nextPos = posDir(curPos, 4))) != null &&
-                    board.isValidMove(curPos, nextPos, curPiece) && ps.getColor() != curPiece.getColor())
+            if((ps = board.getPieceAt(nextPos = posDir(from, 4))) != null &&
+                    board.isValidMove(from, nextPos, curPiece) && ps.getColor() != curPiece.getColor())
                 posMoves.add(nextPos);
 
 
         } else {
-            if(board.isValidMove(curPos, nextPos = posDir(curPos, 7), curPiece) &&
+            if(board.isValidMove(from, nextPos = posDir(from, 7), curPiece) &&
                     board.getPieceAt(nextPos) == null){
                 posMoves.add(nextPos);
-                // doar daca se poate misca cu unu in fata se poate misca cu 2 in fata
-                if(board.isValidMove(curPos, nextPos = posDir(nextPos, 7), curPiece) &&
-                        board.getPieceAt(nextPos) == null && curPos.y == 2){
+                // only if it can move 1 step in front, can it move 2 steps in front
+                if(board.isValidMove(from, nextPos = posDir(nextPos, 7), curPiece) &&
+                        board.getPieceAt(nextPos) == null && from.y == 2){
                     posMoves.add(nextPos);
                 }
             }
 
-            // vad diagonalele
+            // see diagonals
             Piece ps;
-            if((ps = board.getPieceAt(nextPos = posDir(curPos, 0))) != null &&
-                    board.isValidMove(curPos, nextPos, curPiece) && ps.getColor() != curPiece.getColor())
+            if((ps = board.getPieceAt(nextPos = posDir(from, 0))) != null &&
+                    board.isValidMove(from, nextPos, curPiece) && ps.getColor() != curPiece.getColor())
                 posMoves.add(nextPos);
 
-            if((ps = board.getPieceAt(nextPos = posDir(curPos, 6))) != null &&
-                    board.isValidMove(curPos, nextPos, curPiece) && ps.getColor() != curPiece.getColor())
+            if((ps = board.getPieceAt(nextPos = posDir(from, 6))) != null &&
+                    board.isValidMove(from, nextPos, curPiece) && ps.getColor() != curPiece.getColor())
                 posMoves.add(nextPos);
 
         }

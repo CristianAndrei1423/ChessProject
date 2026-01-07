@@ -35,16 +35,11 @@ class LoginPanel extends JPanel {
         form.setBackground(new Color(255, 255 ,255));
 
         JLabel lblWelcome = new JLabel("Welcome Back");
-        // lblWelcome.setFont(Style.FONT_TITLE);
         lblWelcome.setForeground(Color.BLACK);
         lblWelcome.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         emailField = new JTextField();
         passField = new JPasswordField();
-        //emailField.setMaximumSize(new Dimension(200, 30));
-        //passField.setMaximumSize(new Dimension(200, 30));
-        //passField.addActionListener(new LoginHandler());
-
 
         JButton btnLogin = createButton("Sign In", new Color(31, 220, 105));
         btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -52,9 +47,13 @@ class LoginPanel extends JPanel {
         JButton btnSignUp = createButton("Sign Up", new Color(73, 255, 0));
         btnSignUp.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Action: Go to Main Menu
         btnLogin.addActionListener(new LoginHandler());
-        btnSignUp.addActionListener(e -> frame.showCard("SIGNUP"));
+        btnSignUp.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MainFrame.showCard("SIGNUP");
+            }
+        });
 
         JLabel emailAddress = new JLabel("Email Address");
         emailAddress.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -97,7 +96,7 @@ class LoginPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e){
             // here test email/password coresponds to user
-            User user = null;
+            User user;
             user = Main.getChessGame().login(emailField.getText(), passField.getText());
             if(user == null)
             {
@@ -105,7 +104,7 @@ class LoginPanel extends JPanel {
                 return;
             }
             incorrectPass.setVisible(false);
-            frame.showCard("MENU");
+            MainFrame.showCard("MENU");
         }
     }
 

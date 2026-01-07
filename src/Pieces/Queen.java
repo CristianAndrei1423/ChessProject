@@ -5,15 +5,12 @@ import Utils.Board;
 import Utils.Colors;
 import Utils.Position;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Queen extends Piece{
     public Queen(Colors color, Position pos) {
         super(color, pos, new QueenMoveStrategy());
     }
-
-
 
     @Override
     public boolean checkForCheck(Board board, Position kingPosition) {
@@ -28,5 +25,5 @@ public class Queen extends Piece{
     public char type() {
         return 'Q';
     }
-    ///  yas queen
+    // yas queen
 }

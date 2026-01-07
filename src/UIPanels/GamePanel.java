@@ -1,8 +1,6 @@
 package UIPanels;
 
-import Exceptions.InvalidMoveException;
 import Pieces.Piece;
-import UIPanels.GameObserver;
 import Utils.*;
 
 import javax.swing.*;
@@ -11,19 +9,18 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.List;
 
 public class GamePanel extends JPanel implements GameObserver {
-    private JButton[][] squares;
+    private final JButton[][] squares;
     private Point selectedPiece;
     private JButton selectedButton;
     public Game currentGame;
-    private JTextArea historyArea;
-    private JLabel capturedPiecesWhite;
-    private JLabel capturedPiecesBlack;
+    private final JTextArea historyArea;
+    private final JLabel capturedPiecesWhite;
+    private final JLabel capturedPiecesBlack;
     public JLabel endOfGameLabelState;
-    private ArrayList<JButton> highlightedSquares;
-    public boolean isWhiteView; // Field to store board orientation
+    private final ArrayList<JButton> highlightedSquares;
+    public boolean isWhiteView;
 
     static String[] whitePieces = {"♖","♘","♗","♕","♔","♗","♘","♖","♙"};
     static String[] blackPieces = {"♜","♞","♝","♛","♚","♝","♞","♜","♟"};
@@ -39,7 +36,7 @@ public class GamePanel extends JPanel implements GameObserver {
 
         highlightedSquares = new ArrayList<>();
 
-        // initalize the icons
+        // initialize the icons
         initIcons();
 
         // initialize the GamePanel
@@ -158,9 +155,6 @@ public class GamePanel extends JPanel implements GameObserver {
         add(historyPanel, BorderLayout.WEST);
         add(boardWrapper, BorderLayout.CENTER);
         add(rightPanel, BorderLayout.EAST);
-
-        // Initial Visual Update
-        // updatePiecesVisual(currentGame.getBoard());
     }
 
     public static JButton createButton(String text, Color bg) {
@@ -177,7 +171,7 @@ public class GamePanel extends JPanel implements GameObserver {
     private class PieceClickListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e){
-            // If game is over, do not process clicks unless it's to trigger end game handling once
+            // if game is over, do not process clicks unless it's to trigger end game handling once
             if(!currentGame.gameStillValid){
                 if(!endOfGameLabelState.isVisible())
                     Main.getChessGame().handleEndGame(currentGame);
@@ -256,7 +250,7 @@ public class GamePanel extends JPanel implements GameObserver {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            // AFAI this works
+            // works
             currentGame.handleExitGame(currentGame);
             MainFrame.showCard("MENU");
         }
@@ -272,44 +266,21 @@ public class GamePanel extends JPanel implements GameObserver {
         }
     }
 
-    private Colors getColorFromXY(int x, int y){
-        JButton btn = squares[y][x]; // squares is [row][col]
-
-        String str = btn.getText();
-        if(str == null || str.isEmpty()) return Colors.GRAY;
-
-        for(String s : whitePieces)
-            if(str.equals(s))
-                return Colors.WHITE;
-
-        for(String s : blackPieces)
-            if(str.equals(s))
-                return Colors.BLACK;
-
-        return Colors.GRAY;
-    }
-
     // resets the highlighted squares
     private void resetColor() {
         for(JButton jb : highlightedSquares){
             int c = (int) jb.getClientProperty("x");
             int r = (int) jb.getClientProperty("y");
 
-            if ((r + c) % 2 == 0) {
-                squares[r][c].setBackground(new Color(240, 217, 181));
-            } else {
-                squares[r][c].setBackground(new Color(181, 136, 99));
-            }
+            if ((r + c) % 2 == 0) squares[r][c].setBackground(new Color(240, 217, 181));
+            else squares[r][c].setBackground(new Color(181, 136, 99));
         }
-        // Also reset the selected piece color if it exists
+        // reset the selected piece color if it exists
         if(selectedButton != null) {
             int c = (int) selectedButton.getClientProperty("x");
             int r = (int) selectedButton.getClientProperty("y");
-            if ((r + c) % 2 == 0) {
-                selectedButton.setBackground(new Color(240, 217, 181));
-            } else {
-                selectedButton.setBackground(new Color(181, 136, 99));
-            }
+            if ((r + c) % 2 == 0) selectedButton.setBackground(new Color(240, 217, 181));
+            else selectedButton.setBackground(new Color(181, 136, 99));
         }
         highlightedSquares.clear();
     }
@@ -353,7 +324,7 @@ public class GamePanel extends JPanel implements GameObserver {
             if(!currentGame.runForComputer()) {
                 // game ended
                 System.out.println("Computer finished turn with End Game");
-                // don't switch player, so that the player can't do any more moves
+                // don't switch player, so that the player can't make any more moves
                 return;
             }
 
@@ -361,21 +332,6 @@ public class GamePanel extends JPanel implements GameObserver {
             currentGame.switchPlayer();
         }
 
-    }
-
-    public Player getCurrentPlayerFromInd(int currentPlayerInd){
-        Player curPlayer = null;
-        if(currentGame.currentPlayerInd % 2 == 1){
-            if(currentGame.getPlayer().pieceColor == Colors.WHITE)
-                curPlayer = currentGame.getPlayer();
-            else curPlayer = currentGame.getOpponent();
-        }
-        else{
-            if(currentGame.getPlayer().pieceColor == Colors.WHITE)
-                curPlayer = currentGame.getOpponent();
-            else curPlayer = currentGame.getPlayer();
-        }
-        return curPlayer;
     }
 
     @Override
@@ -390,32 +346,20 @@ public class GamePanel extends JPanel implements GameObserver {
     }
 
     @Override
-    public void onPieceCaptured(Piece piece) {
-        updateCapturedPieces();
-    }
-
-    @Override
     public void onPieceSelected(Point point) {
         resetColor();
 
         Position pos;
-        if(isWhiteView) {
-            pos = new Position((char)('A' + point.x), 8 - point.y);
-        } else {
-            pos = new Position((char)('H' - point.x), point.y + 1);
-        }
+        // get right coords
+        if(isWhiteView) pos = new Position((char)('A' + point.x), 8 - point.y);
+        else pos = new Position((char)('H' - point.x), point.y + 1);
 
         Piece ps = currentGame.getBoard().getPieceAt(pos);
         if (ps == null) return;
 
-        if(ps.getColor() != currentGame.currentPlayerColor)
-            return;
+        if(ps.getColor() != currentGame.currentPlayerColor) return;
 
-        List<Position> posMoves = ps.getPossibleMoves(currentGame.getBoard());
-
-        posMoves = ps.getPossibleMoves(currentGame.getBoard());
-
-        for(Position p : posMoves){
+        for(Position p : ps.getPossibleMoves(currentGame.getBoard())){
             // Convert Backend Position to UI Grid [Row][Col]
             int uiRow, uiCol;
             if(isWhiteView) {
@@ -434,7 +378,6 @@ public class GamePanel extends JPanel implements GameObserver {
     }
 
     public void updatePiecesVisual(Board board){
-        // Loop through the VISUAL grid (0,0 is Top-Left)
         for(int row = 0 ; row < 8; row++) {
             for(int col = 0; col < 8; col++) {
 
@@ -454,16 +397,12 @@ public class GamePanel extends JPanel implements GameObserver {
                 }
             }
         }
-
-        // System.out.println(currentGame.getBoard().toString(Colors.WHITE));
-
     }
 
     public void updateCapturedPieces(){
         // update captured pieces based on each player's captured pieces
 
         Colors playerCol = currentGame.getPlayer().pieceColor;
-        Colors compCol = currentGame.getOpponent().pieceColor;
 
         StringBuilder str = new StringBuilder();
         if(playerCol == Colors.WHITE){

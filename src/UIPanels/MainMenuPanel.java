@@ -1,19 +1,15 @@
 package UIPanels;
 
-import Utils.Game;
-import UIPanels.MenuObserver;
 import Utils.Main;
 import Utils.User;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 
-public class MainMenuPanel extends JPanel implements MenuObserver {
+public class MainMenuPanel extends JPanel {
     JLabel TotPoints;
     JLabel ActiveGames;
     public MainFrame frame;
@@ -39,10 +35,27 @@ public class MainMenuPanel extends JPanel implements MenuObserver {
         JButton btnContinue = createMenuButton("Continue Game", "Resume a game in progress", new Color(0, 59, 255));
         JButton btnLogout = createMenuButton("Logout", "Return to login", new Color(255, 0, 0));
 
-        //btnNew.addActionListener(e -> frame.showCard("GAME"));
-        btnLogout.addActionListener(new LogoutHandler());
-        btnNew.addActionListener(new NewGameHandler());
-        btnContinue.addActionListener(new ContinueGameHandler());
+        btnLogout.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // when user logs out
+                Main.getChessGame().currentUser = null;
+                MainFrame.showCard("LOGIN");
+                Main.getChessGame().write();
+            }
+        });
+        btnNew.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MainFrame.showCard("NEWGAME");
+            }
+        });
+        btnContinue.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MainFrame.showCard("GAMEEXPLORER");
+            }
+        });
 
         content.add(statsPanel);
         content.add(Box.createVerticalStrut(30));
@@ -55,32 +68,6 @@ public class MainMenuPanel extends JPanel implements MenuObserver {
         add(content);
     }
 
-    private class NewGameHandler implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e){
-            // when user wants a new game
-            MainFrame.showCard("NEWGAME");
-        }
-    }
-
-    private class ContinueGameHandler implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e){
-            // here prompt the user to the game explorer
-            MainFrame.showCard("GAMEEXPLORER");
-        }
-    }
-
-    private class LogoutHandler implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e){
-            // when user logs out
-            Main.getChessGame().currentUser = null;
-            MainFrame.showCard("LOGIN");
-            Main.getChessGame().write();
-        }
-    }
-
     private JButton createMenuButton(String title, String subtitle, Color accent) {
         JButton btn = new JButton("<html><center><b style='font-size:12px'>" + title + "</b><br><span style='font-size:9px'>" + subtitle + "</span></center></html>");
         btn.setBackground(new Color(30, 40, 60));
@@ -91,34 +78,8 @@ public class MainMenuPanel extends JPanel implements MenuObserver {
         return btn;
     }
 
-
-    private JPanel createStatCard(String number, String label) {
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBackground(new Color(30, 40, 60));
-        p.setBorder(new EmptyBorder(15, 25, 15, 25));
-        JLabel num = new JLabel(number, SwingConstants.CENTER);
-        num.setFont(new Font("SansSerif", Font.BOLD, 22));
-        num.setForeground(Color.YELLOW);
-        JLabel lbl = new JLabel(label, SwingConstants.CENTER);
-        lbl.setForeground(new Color(148, 163, 184));
-        p.add(num, BorderLayout.CENTER);
-        p.add(lbl, BorderLayout.SOUTH);
-        return p;
-    }
-
-    @Override
     public void onMenuEnter(User user) {
         TotPoints.setText("Total points : " + user.getPoints());
         ActiveGames.setText("Active Games : " + user.getActiveGames().size());
-    }
-
-    @Override
-    public void onContinueOption(List<Game> gameList) {
-
-    }
-
-    @Override
-    public void onNewGame() {
-
     }
 }

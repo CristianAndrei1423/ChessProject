@@ -20,9 +20,6 @@ public class Position {
     }
 
     public int compare(Object o1, Object o2) {
-        // 2 obiecte de tip Position se compara intre ele crescator dupa coord y si,
-        // daca aceasta este e egala, crescator dupa coord x
-
         if(o1 instanceof Position a && o2 instanceof Position b) {
             if(a.y > b.y){
                 return 1;
@@ -69,7 +66,7 @@ public class Position {
     /// Returns a list of positions between 2 positions starting from position from
     public static List<Position> trajectory(Position from, Position to){
         int dir = Piece.dirFromPositions(from, to);
-        List<Position> ans = new ArrayList<Position>();
+        List<Position> ans = new ArrayList<>();
 
         Position cur = new Position(from.x, from.y);
 
@@ -83,17 +80,6 @@ public class Position {
 
     public int manhattanDistance(Position a, Position b){
         return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
-    }
-
-    public static void main(String[] args){
-        // testare fromString
-        Position pos = fromString("A3");
-        System.out.println(pos.toString());
-
-        // testare trajectory
-        Position pos1 = new Position('A', 3);
-        Position pos2 = new Position('F', 8);
-        System.out.println(trajectory(pos1, pos2).toString());
     }
 
 }

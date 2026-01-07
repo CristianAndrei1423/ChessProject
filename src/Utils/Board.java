@@ -1,9 +1,7 @@
 package Utils;
 
 import Pieces.*;
-import UIPanels.GamePanel;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +12,7 @@ public class Board {
     TreeSet<ChessPair<Position, Piece>> pieces;
 
     public Board(){
-        this.pieces = new TreeSet<ChessPair<Position, Piece>>();
+        this.pieces = new TreeSet<>();
     }
 
     public Board(TreeSet<ChessPair<Position, Piece>> pieces){
@@ -22,10 +20,9 @@ public class Board {
     }
 
     public void initialize(){
-        // initializeaza tabla de sah cu pozitiile initiale creand obiectele de tip Piece si adaugandu-le
-        // in lista interna
+        // initialize board with pieces and add them to internal list
 
-        // se asigura ca pozitia stocata in Piece si pozitia stocata din ChessPair sunt consistente
+        // ensure position in Piece is the same as in ChessPair
         Piece rookB1 = initializeTypeOfPiece("R", Colors.BLACK, new Position('A', 8));
         pieces.add(new ChessPair<>(rookB1.getPosition(), rookB1));
         Piece knightB1 = initializeTypeOfPiece("N", Colors.BLACK, new Position('B', 8));
@@ -42,8 +39,9 @@ public class Board {
         pieces.add(new ChessPair<>(knightB2.getPosition(), knightB2));
         Piece rookB2 = initializeTypeOfPiece("R", Colors.BLACK, new Position('H', 8));
         pieces.add(new ChessPair<>(rookB2.getPosition(), rookB2));
+
         Piece[] pawnsB = new Piece[8];
-// ii initializez de la stanga la dreapta
+
         for (int i = 0; i < 8; i++) {
             char aux = (char) ((int) 'A' + i);
             pawnsB[i] = initializeTypeOfPiece("P", Colors.BLACK, new Position(aux, 7));
@@ -67,12 +65,31 @@ public class Board {
         Piece rookW2 = initializeTypeOfPiece("R", Colors.WHITE, new Position('H', 1));
         pieces.add(new ChessPair<>(rookW2.getPosition(), rookW2));
         Piece[] pawnsW = new Piece[8];
-        // ii initializez de la stanga la dreapta
+
         for (int i = 0; i < 8; i++) {
             char aux = (char) ((int) 'A' + i);
             pawnsW[i] = initializeTypeOfPiece("P", Colors.WHITE, new Position(aux, 2));
             pieces.add(new ChessPair<>(pawnsW[i].getPosition(), pawnsW[i]));
         }
+    }
+
+    private void handleCaptureInternal(Player player, Player op, Position to){
+        System.out.println("Updated player points");
+        // update player points
+        player.setPoints(player.getPoints() + pointsFromCapture(getPieceAt(to)));
+
+        // update captured pieces of the player
+        player.addCapturedPiece(getPieceAt(to));
+
+        // update captured piece on board and on pieces of the opponent
+        ChessPair<Position, Piece> ps = new ChessPair<>(to, getPieceAt(to));
+
+        System.out.println("Remove captured piece from board");
+        // remove captured piece from board
+        removePiece(ps);
+
+        System.out.println("Remove captured piece from opponent owned piece");
+        op.removeOwnedPiece(ps);
     }
 
     public Move movePiece(Position from, Position to, Player player, Player op){
@@ -91,7 +108,6 @@ public class Board {
                     if(pair.getValue() instanceof Pawn){
                         if(pair.getValue().getColor().equals(Colors.BLACK) && to.y == 1){
                             // update on board
-                            // Piece Queen = new Queen(pair.getValue().getColor(), pair.getValue().getPosition());
                             Piece Queen = initializeTypeOfPiece("Q",
                                     pair.getValue().getColor(), pair.getValue().getPosition());
                             // update in Player owned pieces
@@ -126,62 +142,16 @@ public class Board {
                             int dirOfMove = Piece.dirFromPositions(from, to);
                             if(pair.getValue().getColor() == Colors.BLACK){
                                 if(dirOfMove == 2 || dirOfMove == 4){
-                                    System.out.println("Updated player points");
-                                    // update player points
-                                    player.setPoints(player.getPoints() + pointsFromCapture(getPieceAt(to)));
-
-                                    // update captured pieces of the player
-                                    player.addCapturedPiece(getPieceAt(to));
-
-                                    // update captured piece on board and on pieces of the opponent
-                                    ChessPair<Position, Piece> ps = new ChessPair<Position, Piece>(to, getPieceAt(to));
-
-                                    System.out.println("Remove captured piece from board");
-                                    // remove captured piece from board
-                                    removePiece(ps);
-
-                                    System.out.println("Remove captured piece from opponent owned piece");
-                                    op.removeOwnedPiece(ps);
-
+                                    handleCaptureInternal(player, op, to);
                                 }
                             } else {
                                 if(dirOfMove == 0 || dirOfMove == 6){
-                                    System.out.println("Updated player points");
-                                    // update player points
-                                    player.setPoints(player.getPoints() + pointsFromCapture(getPieceAt(to)));
-
-                                    // update captured pieces of the player
-                                    player.addCapturedPiece(getPieceAt(to));
-
-                                    // update captured piece on board and on pieces of the opponent
-                                    ChessPair<Position, Piece> ps = new ChessPair<Position, Piece>(to, getPieceAt(to));
-
-                                    System.out.println("Remove captured piece from board");
-                                    // remove captured piece from board
-                                    removePiece(ps);
-
-                                    System.out.println("Remove captured piece from opponent owned piece");
-                                    op.removeOwnedPiece(ps);
+                                    handleCaptureInternal(player, op, to);
                                 }
                             }
                         }
                         else {
-                            System.out.println("Updated player points");
-                            // update player points
-                            player.setPoints(player.getPoints() + pointsFromCapture(getPieceAt(to)));
-
-                            // update captured pieces of the player
-                            player.addCapturedPiece(getPieceAt(to));
-
-                            // update captured piece on board and on pieces of the opponent
-                            ChessPair<Position, Piece> ps = new ChessPair<Position, Piece>(to, getPieceAt(to));
-
-                            System.out.println("Remove captured piece from board");
-                            // remove captured piece from board
-                            removePiece(ps);
-
-                            System.out.println("Remove captured piece from opponent owned piece");
-                            op.removeOwnedPiece(ps);
+                            handleCaptureInternal(player, op, to);
                         }
                     }
 
@@ -195,10 +165,8 @@ public class Board {
                     pair.setKey(to);
                     pieces.add(pair);
 
-                    System.out.println("Added new pair " + to.toString() + " " + pair.getValue().toString());
-                    player.addOwnedPiece(new ChessPair<Position, Piece>(to, pair.getValue()));
-
-
+                    System.out.println("Added new pair " + to + " " + pair.getValue().toString());
+                    player.addOwnedPiece(new ChessPair<>(to, pair.getValue()));
 
                     return new Move(player.pieceColor, from, to);
                 }
@@ -217,31 +185,27 @@ public class Board {
     }
 
     public boolean isValidMove(Position from, Position to, Piece piece){
-        // IMPLEMENTARE :
-        // - dau check mai intai sa vad daca to e in bounds
+        // first check if in-bounds
         if((to.x >= 'A' && to.x <= 'H') && (to.y >= 1 && to.y <= 8) && (getPieceAt(from) == null ||
                 getPieceAt(from).equals(piece))){
-            // - vad daca nu raman in sah daca mut piesa :
 
+            // check if I get checked if I move the piece
             if(piece instanceof King) {
-                // vreau sa vad daca nu se pune in sah singur
+                // check if it puts itself in check
                 int[] dirs = {0, 1, 2, 3, 4, 5, 6, 7};
                 List<Piece> intersPieces = Piece.axesInters(this, to, dirs);
 
                 for (int i = 0; i < 8; i++) {
                     Piece ps = intersPieces.get(i);
 
-                    // bugfix : the king was blocking the line of sight
                     if (ps != null && ps.equals(piece)) {
                         List<Piece> behindList = Piece.axesInters(this, from, new int[]{i});
                         if (!behindList.isEmpty()) {
                             ps = behindList.getFirst();
                             if (ps != null && ps.getColor() != piece.getColor()) {
-                                if (i % 2 == 0) { // diagonala
+                                if (i % 2 == 0) {
                                     if (ps instanceof Queen || ps instanceof Bishop) return false;
-                                } else { // drept
-                                    if (ps instanceof Queen || ps instanceof Rook) return false;
-                                }
+                                } else if (ps instanceof Queen || ps instanceof Rook) return false;
                             }
                         }
                         continue;
@@ -262,7 +226,7 @@ public class Board {
                     }
                 }
 
-                // check for horse too
+                // check for horses too
                 for(ChessPair<Position, Piece> ps : pieces){
                     if(ps.getValue() instanceof Knight && ps.getValue().getColor() != piece.getColor()){
                         if(ps.getValue().checkForCheck(this, to))
@@ -272,26 +236,23 @@ public class Board {
 
             }
             else {
-                // trasez 8 linii de la rege si vad daca se intersecteaza o
-                // linie cu piesa asta pe care o am aici
+                // check if I move this piece, the king gets checked
+                // first get all pieces from raytracing
                 int[] dirs = {0, 1, 2, 3, 4, 5, 6, 7};
-
 
                 List<Piece> intersPieces = Piece.axesInters(this, getKingPos(piece.getColor()),
                         dirs);
 
                 if (intersPieces.contains(piece)) {
-                    // incerc sa gasesc directia
+                    // find direction
                     int indDir = 0;
                     for (Piece ps : intersPieces) {
-                        // aici inters pieces poate avea valori nule
                         if (ps != null && ps.equals(piece))
                             break;
                         indDir++;
                     }
 
-                    // fac o directie si dupa parsez astfel incat sa vad ce e
-                    // in spatele piesei
+                    // make a direction then see what's in the back of the piece
                     int[] auxDir = {indDir};
                     List<Piece> piesaDinSpate = Piece.axesInters(this, from, auxDir);
 
@@ -311,8 +272,8 @@ public class Board {
                     }
                 }
             }
-            // - sau daca esti deja in sah :
-            List<ChessPair<Position, Piece>> checkingPieces = new ArrayList<ChessPair<Position, Piece>>();
+            // check if already in check
+            List<ChessPair<Position, Piece>> checkingPieces = new ArrayList<>();
 
             for(ChessPair<Position, Piece> ps : pieces)
                 if(ps.getValue().getColor() != piece.getColor())
@@ -321,20 +282,16 @@ public class Board {
 
             if(!checkingPieces.isEmpty()){
                 if(checkingPieces.size()>=2){
-                    // aici poti misca doar regele
+                    // here you can only move the king
                     if(!(piece instanceof King))
                         return false;
                 }
                 else{
-                    // daca pozitia to este pe traiectoria piesei atacante
-                    // mutarea poate fi valida
+                    // check if the king wants to move in an attacked square
                     Position kingPos = getKingPos(piece.getColor());
                     Position attackingPiecePos = checkingPieces.getFirst().getKey();
                     Piece attackingPiece = checkingPieces.getFirst().getValue();
 
-
-                    // bugfixed : check if the attacking piece is a knight
-                    // to avoid infinite yield
                     if (attackingPiece instanceof Knight) {
                         if (!to.equals(attackingPiecePos) && !(piece instanceof King)) {
                             return false;
@@ -346,13 +303,11 @@ public class Board {
                 }
             }
 
-            // - daca e ceva acolo :
+            // if something is already there :
             if(getPieceAt(to) != null) {
-                // trebuie sa vad daca e un pion mai intai si dupa
-                // pentru ca daca se duce fix in fata nu poate lua ca orice alta piesa
+                // check if the piece is a pawn because it can't capture in front
 
                 if(piece instanceof Pawn){
-                    // trb sa vad directiile
                     int dir = Piece.dirFromPositions(from, to);
 
                     if(piece.getColor() == Colors.BLACK && dir == 3)
@@ -371,7 +326,7 @@ public class Board {
 
     public Position getKingPos(Colors color){
         for(ChessPair<Position, Piece> cp : pieces){
-            Piece ps = (Piece)cp.getValue();
+            Piece ps = cp.getValue();
             if(ps instanceof King ){
                 if(ps.getColor().equals(color)){
                     return cp.getKey();
@@ -395,7 +350,7 @@ public class Board {
     }
 
     private void removePiece(ChessPair<Position, Piece> piece){
-        // dau check de 2 ori din cauza unor bug-uri
+        // check 2 times because of bugz
         if(pieces.contains(piece)){
             pieces.remove(piece);
             return;
@@ -408,16 +363,14 @@ public class Board {
                 }
             }
         }
-        throw new RuntimeException("Nu a deletat piesa din pieces");
+        throw new RuntimeException("It did not remove the piece");
     }
 
-    public void main(String[] args){
-        // - daca merge treesetul
+    public void main(){
+        // test to see if the treeset works
         System.out.println("--------------------------TEST BOARD--------------------------");
 
         initialize();
-
-        Piece piece = pieces.getFirst().getValue();
 
         Position a = new Position('D', 4);
         Position b = new Position('D', 3);
@@ -426,19 +379,16 @@ public class Board {
 
     }
 
+    /// deprecated but useful for testing, shows whole board in ascii
     public String toString(Colors color){
-        // trebuie sa afisez din perspectiva culorii
 
         String ceil = "   ------------------------------------\n";
-
-        StringBuilder str = new StringBuilder();
 
         StringBuilder[] ans = new StringBuilder[11];
 
         ans[0]=new StringBuilder();
         ans[0].append(ceil);
 
-        // mai intai pune fiecare piesa intr-un matrix pentru apelare usoara
         String[][] matrix = new String[9][9];
 
         if(Colors.WHITE == color) {

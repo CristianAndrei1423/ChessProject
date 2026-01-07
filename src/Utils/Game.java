@@ -92,10 +92,6 @@ public class Game {
         return opponent;
     }
 
-    public void start(boolean newGame){
-        // incepe un joc nou de sah
-    }
-
     private boolean last3MovesSame() {
         if(moveList.size() < 6)
             return false;
@@ -133,9 +129,9 @@ public class Game {
 
         Random rand = new Random();
 
-        // Check if Computer has no moves (Mate or Stalemate for Computer)
+        // check if Computer has no moves left
         if(possibleMoves.size() == 0){
-            System.out.println("Opponent king has no moves left");
+            System.out.println("Computer has no moves left");
 
             boolean isCheck = false;
             Position compKingPos = board.getKingPos(opponent.pieceColor);
@@ -149,10 +145,10 @@ public class Game {
             }
 
             if(isCheck){
-                // Player wins
+                // player wins
                 handleEndOfGame(2);
             } else {
-                // Draw
+                // draw
                 handleEndOfGame(0);
             }
 
@@ -163,14 +159,12 @@ public class Game {
         Move move = possibleMoves.get(ind);
 
         notifiyMoveMade(move);
-        // gameFrame.GamePanel.onMoveMade(move);
 
-        // Check if Player is now Checkmated or Stalemated
         if(checkForCheckMate(player)){
             boolean isCheck = false;
             Position playerKingPos = board.getKingPos(player.pieceColor);
 
-            // Check if any of Computer's pieces attack the Player's King
+            // check if any of computer's pieces attack the clayer's king
             for(ChessPair<Position, Piece> cp : opponent.getOwnedPieces()){
                 if(cp.getValue().checkForCheck(board, playerKingPos)){
                     isCheck = true;
@@ -179,15 +173,16 @@ public class Game {
             }
 
             if(isCheck){
-                // Player lost
+                // player lost (somehow)
                 handleEndOfGame(-2);
             } else {
+                // draw
                 handleEndOfGame(0);
             }
             return false;
         }
 
-        // Check if last 3 moves were the same
+        // check if last 3 moves were the same
         if(last3MovesSame()){
             System.out.println("Last 3 moves the same");
             handleEndOfGame(0);
@@ -203,7 +198,7 @@ public class Game {
     }
 
     public boolean checkForCheckMate(Player player){
-        // trebuie sa vad daca playerul dat ca param are miscari valide
+        // check if the parameter player has valid moves left
         List<ChessPair<Position,Piece>> cpList = player.getOwnedPieces();
 
         for(ChessPair<Position,Piece> cp : cpList){
@@ -244,15 +239,15 @@ public class Game {
     }
 
     public void handleEndOfGame(int state){
-        // jocul marcat ca finalizat
+        // game marked as over
         System.out.println("Game is over. State: " + state);
         gameStillValid = false;
         // state :
-        // 2 - playerul a castigat prin mat
-        // 1 - playerul a castigat prin ff
-        // 0 - remiza / pat
-        // -1 - playerul a dat ff
-        // -2 - playerul a pierdut prin mat
+        // 2 - player won through mate
+        // 1 - player won through forfeit
+        // 0 - stalemate
+        // -1 - player resigned
+        // -2 - player lost through mate
         endGameState = state;
     }
 
@@ -260,11 +255,9 @@ public class Game {
         Main.getChessGame().write();
 
         if(game.gameStillValid){
-            // if it works it works ig
             Main.getChessGame().gameMap.remove(Main.getChessGame().lastGameId-1);
             Main.getChessGame().gameMap.put(Main.getChessGame().lastGameId-1, game);
         }
-        // already handled in PieceClickListener
         else {
             if(!gameFrame.GamePanel.endOfGameLabelState.isVisible())
                 Main.getChessGame().handleEndGame(game);
@@ -275,24 +268,6 @@ public class Game {
     public String toString(){
         String str = "Game id : " + this.gameId + " between " + player.toString() + " and " + opponent.toString() + "\n";
         return str;
-    }
-
-    private int handleInput(String in) throws InvalidCommandException {
-        if(in.length() >= 3 && in.charAt(2) == '-')
-            return 1;
-
-        if(in.equals("ff"))
-            return 3;
-
-        if(in.length() == 2){
-            return 2;
-        }
-
-        if(in.equals("leave"))
-            return 4;
-
-        throw new InvalidCommandException("Invalid command");
-
     }
 
 }

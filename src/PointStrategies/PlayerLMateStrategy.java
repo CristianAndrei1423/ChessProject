@@ -1,13 +1,12 @@
 package PointStrategies;
 
-import Utils.Game;
 import UIPanels.MainFrame;
 
 public class PlayerLMateStrategy implements PointsStrategy{
     @Override
     public int pointsDeducted() {
-        System.out.println("Playerul a pierdut prin mat");
-        MainFrame.GamePanel.endOfGameLabelState.setText("Playerul a pierdut prin mat, -300 de puncte");
+        System.out.println("Player has lost through mate");
+        MainFrame.GamePanel.endOfGameLabelState.setText("Player has lost through mate, -300 points");
         return -300;
     }
 }

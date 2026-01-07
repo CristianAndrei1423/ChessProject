@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 public class SignUpPanel extends JPanel {
     JTextField emailField;
@@ -35,7 +36,6 @@ public class SignUpPanel extends JPanel {
         form.setBackground(new Color(255, 255 ,255));
 
         JLabel lblWelcome = new JLabel("Make an account:");
-        // lblWelcome.setFont(Style.FONT_TITLE);
         lblWelcome.setForeground(Color.BLACK);
         lblWelcome.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -51,9 +51,27 @@ public class SignUpPanel extends JPanel {
         JButton btnLogin = createButton("Already have an account?", new Color(73, 255, 0));
         btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Action: Go to Main Menu
-        btnSignUp.addActionListener(new SignUpHandler());
-        btnLogin.addActionListener(e -> frame.showCard("LOGIN"));
+        btnSignUp.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // here test email/password coresponds to user
+                User user;
+                user = Main.getChessGame().newAccount(emailField.getText(), Arrays.toString(passField.getPassword()), 0);
+                if(user == null)
+                {
+                    alreadyInUse.setVisible(true);
+                    return;
+                }
+                alreadyInUse.setVisible(false);
+                MainFrame.showCard("MENU");
+            }
+        });
+        btnLogin.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MainFrame.showCard("LOGIN");
+            }
+        });
 
         JLabel emailAddress = new JLabel("Email Address");
         emailAddress.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -89,22 +107,6 @@ public class SignUpPanel extends JPanel {
 
         add(leftPanel);
         add(rightPanel);
-    }
-
-    private class SignUpHandler implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e){
-            // here test email/password coresponds to user
-            User user = null;
-            user = Main.getChessGame().newAccount(emailField.getText(), passField.getText(), 0);
-            if(user == null)
-            {
-                alreadyInUse.setVisible(true);
-                return;
-            }
-            alreadyInUse.setVisible(false);
-            frame.showCard("MENU");
-        }
     }
 
     public static JButton createButton(String text, Color bg) {

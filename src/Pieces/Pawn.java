@@ -4,7 +4,6 @@ import MoveStrategies.PawnMoveStrategy;
 import Utils.Board;
 import Utils.Colors;
 import Utils.Position;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Pawn extends Piece {
@@ -14,8 +13,9 @@ public class Pawn extends Piece {
 
     @Override
     public boolean checkForCheck(Board board, Position kingPosition) {
-        int[] dirs; // in diagonale
+        int[] dirs;
 
+        // change the diagonals based on the color of the piece
         if(this.getColor() == Colors.BLACK)
             dirs = new int[]{0, 6};
         else dirs = new int[]{2, 4};
