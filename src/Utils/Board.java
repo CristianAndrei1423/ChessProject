@@ -26,51 +26,51 @@ public class Board {
         // in lista interna
 
         // se asigura ca pozitia stocata in Piece si pozitia stocata din ChessPair sunt consistente
-        Piece rookB1 = new Rook(Colors.BLACK, new Position('A',8));
+        Piece rookB1 = initializeTypeOfPiece("R", Colors.BLACK, new Position('A', 8));
         pieces.add(new ChessPair<>(rookB1.getPosition(), rookB1));
-        Piece knightB1 = new Knight(Colors.BLACK, new Position('B', 8));
+        Piece knightB1 = initializeTypeOfPiece("N", Colors.BLACK, new Position('B', 8));
         pieces.add(new ChessPair<>(knightB1.getPosition(), knightB1));
-        Piece bishopB1 = new Bishop(Colors.BLACK, new Position('C',8));
+        Piece bishopB1 = initializeTypeOfPiece("B", Colors.BLACK, new Position('C', 8));
         pieces.add(new ChessPair<>(bishopB1.getPosition(), bishopB1));
-        Piece queenB = new Queen(Colors.BLACK, new Position('D',8));
+        Piece queenB = initializeTypeOfPiece("Q", Colors.BLACK, new Position('D', 8));
         pieces.add(new ChessPair<>(queenB.getPosition(), queenB));
-        Piece kingB = new King(Colors.BLACK, new Position('E', 8));
+        Piece kingB = initializeTypeOfPiece("K", Colors.BLACK, new Position('E', 8));
         pieces.add(new ChessPair<>(kingB.getPosition(), kingB));
-        Piece bishopB2 = new Bishop(Colors.BLACK, new Position('F', 8));
+        Piece bishopB2 = initializeTypeOfPiece("B", Colors.BLACK, new Position('F', 8));
         pieces.add(new ChessPair<>(bishopB2.getPosition(), bishopB2));
-        Piece knightB2 = new Knight(Colors.BLACK, new Position('G', 8));
+        Piece knightB2 = initializeTypeOfPiece("N", Colors.BLACK, new Position('G', 8));
         pieces.add(new ChessPair<>(knightB2.getPosition(), knightB2));
-        Piece rookB2 = new Rook(Colors.BLACK, new Position('H', 8));
+        Piece rookB2 = initializeTypeOfPiece("R", Colors.BLACK, new Position('H', 8));
         pieces.add(new ChessPair<>(rookB2.getPosition(), rookB2));
         Piece[] pawnsB = new Piece[8];
-        // ii initializez de la stanga la dreapta
-        for(int i = 0;i < 8 ;i++){
-            char aux = (char)((int)'A' + i);
-            pawnsB[i] = new Pawn(Colors.BLACK, new Position(aux, 7));
+// ii initializez de la stanga la dreapta
+        for (int i = 0; i < 8; i++) {
+            char aux = (char) ((int) 'A' + i);
+            pawnsB[i] = initializeTypeOfPiece("P", Colors.BLACK, new Position(aux, 7));
             pieces.add(new ChessPair<>(pawnsB[i].getPosition(), pawnsB[i]));
         }
 
-        Piece rookW1 = new Rook(Colors.WHITE, new Position('A',1));
+        Piece rookW1 = initializeTypeOfPiece("R", Colors.WHITE, new Position('A', 1));
         pieces.add(new ChessPair<>(rookW1.getPosition(), rookW1));
-        Piece knightW1 = new Knight(Colors.WHITE, new Position('B', 1));
+        Piece knightW1 = initializeTypeOfPiece("N", Colors.WHITE, new Position('B', 1));
         pieces.add(new ChessPair<>(knightW1.getPosition(), knightW1));
-        Piece bishopW1 = new Bishop(Colors.WHITE, new Position('C',1));
+        Piece bishopW1 = initializeTypeOfPiece("B", Colors.WHITE, new Position('C', 1));
         pieces.add(new ChessPair<>(bishopW1.getPosition(), bishopW1));
-        Piece queenW = new Queen(Colors.WHITE, new Position('D',1));
+        Piece queenW = initializeTypeOfPiece("Q", Colors.WHITE, new Position('D', 1));
         pieces.add(new ChessPair<>(queenW.getPosition(), queenW));
-        Piece kingW = new King(Colors.WHITE, new Position('E', 1));
+        Piece kingW = initializeTypeOfPiece("K", Colors.WHITE, new Position('E', 1));
         pieces.add(new ChessPair<>(kingW.getPosition(), kingW));
-        Piece bishopW2 = new Bishop(Colors.WHITE, new Position('F', 1));
+        Piece bishopW2 = initializeTypeOfPiece("B", Colors.WHITE, new Position('F', 1));
         pieces.add(new ChessPair<>(bishopW2.getPosition(), bishopW2));
-        Piece knightW2 = new Knight(Colors.WHITE, new Position('G', 1));
+        Piece knightW2 = initializeTypeOfPiece("N", Colors.WHITE, new Position('G', 1));
         pieces.add(new ChessPair<>(knightW2.getPosition(), knightW2));
-        Piece rookW2 = new Rook(Colors.WHITE, new Position('H', 1));
+        Piece rookW2 = initializeTypeOfPiece("R", Colors.WHITE, new Position('H', 1));
         pieces.add(new ChessPair<>(rookW2.getPosition(), rookW2));
         Piece[] pawnsW = new Piece[8];
         // ii initializez de la stanga la dreapta
-        for(int i = 0;i < 8 ;i++){
-            char aux = (char)((int)'A' + i);
-            pawnsW[i] = new Pawn(Colors.WHITE, new Position(aux, 2));
+        for (int i = 0; i < 8; i++) {
+            char aux = (char) ((int) 'A' + i);
+            pawnsW[i] = initializeTypeOfPiece("P", Colors.WHITE, new Position(aux, 2));
             pieces.add(new ChessPair<>(pawnsW[i].getPosition(), pawnsW[i]));
         }
     }
@@ -90,9 +90,23 @@ public class Board {
                     // check if piece is a pawn and got to opposite side
                     if(pair.getValue() instanceof Pawn){
                         if(pair.getValue().getColor().equals(Colors.BLACK) && to.y == 1){
-                            // PAWN TRANSFORMS
                             // update on board
-                            Piece Queen = new Queen(pair.getValue().getColor(), pair.getValue().getPosition());
+                            // Piece Queen = new Queen(pair.getValue().getColor(), pair.getValue().getPosition());
+                            Piece Queen = initializeTypeOfPiece("Q",
+                                    pair.getValue().getColor(), pair.getValue().getPosition());
+                            // update in Player owned pieces
+                            for(ChessPair<Position, Piece> pairs : player.getOwnedPieces())
+                                if(pairs.equals(pair))
+                                    pairs.setValue(Queen);
+
+                            pair.setValue(Queen);
+
+                            piece = Queen;
+                        }
+                        else if(pair.getValue().getColor().equals(Colors.WHITE) && to.y == 8){
+                            // update on board
+                            Piece Queen = initializeTypeOfPiece("Q",
+                                    pair.getValue().getColor(), pair.getValue().getPosition());
 
                             // update in Player owned pieces
                             for(ChessPair<Position, Piece> pairs : player.getOwnedPieces())
@@ -100,7 +114,9 @@ public class Board {
                                     pairs.setValue(Queen);
 
                             pair.setValue(Queen);
+                            piece = Queen;
                         }
+
                     }
 
                     // check if move results in capture
@@ -210,10 +226,27 @@ public class Board {
             if(piece instanceof King) {
                 // vreau sa vad daca nu se pune in sah singur
                 int[] dirs = {0, 1, 2, 3, 4, 5, 6, 7};
-                // TODO : se pune singur in sah atunci cand piesa atacanta e cal
                 List<Piece> intersPieces = Piece.axesInters(this, to, dirs);
 
-                for (Piece ps : intersPieces) {
+                for (int i = 0; i < 8; i++) {
+                    Piece ps = intersPieces.get(i);
+
+                    // bugfix : the king was blocking the line of sight
+                    if (ps != null && ps.equals(piece)) {
+                        List<Piece> behindList = Piece.axesInters(this, from, new int[]{i});
+                        if (!behindList.isEmpty()) {
+                            ps = behindList.getFirst();
+                            if (ps != null && ps.getColor() != piece.getColor()) {
+                                if (i % 2 == 0) { // diagonala
+                                    if (ps instanceof Queen || ps instanceof Bishop) return false;
+                                } else { // drept
+                                    if (ps instanceof Queen || ps instanceof Rook) return false;
+                                }
+                            }
+                        }
+                        continue;
+                    }
+
                     if(ps != null && ps.getColor() != piece.getColor()){
                         if(ps instanceof King){
                             // check if the kings have enough distance between one another
@@ -228,6 +261,15 @@ public class Board {
                         }
                     }
                 }
+
+                // check for horse too
+                for(ChessPair<Position, Piece> ps : pieces){
+                    if(ps.getValue() instanceof Knight && ps.getValue().getColor() != piece.getColor()){
+                        if(ps.getValue().checkForCheck(this, to))
+                            return false;
+                    }
+                }
+
             }
             else {
                 // trasez 8 linii de la rege si vad daca se intersecteaza o
@@ -339,7 +381,8 @@ public class Board {
         return null;
     }
 
-    public Piece initializeTypeOfPiece(String type, Colors color, Position pos) {
+    // factory pattern
+    public static Piece initializeTypeOfPiece(String type, Colors color, Position pos) {
         return switch (type) {
             case "B" -> new Bishop(color, pos);
             case "K" -> new King(color, pos);

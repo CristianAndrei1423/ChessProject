@@ -1,4 +1,5 @@
 package Pieces;
+import MoveStrategies.MoveStrategy;
 import Utils.*;
 
 import java.util.ArrayList;
@@ -9,13 +10,20 @@ public abstract class Piece implements ChessPiece {
     Colors color;
     Position pos;
 
+    protected MoveStrategy moveStrategy;
+
+    public List<Position> getPossibleMoves(Board board){
+        return moveStrategy.getPossibleMoves(board, this.pos);
+    }
+
     public Colors getColor(){
         return color;
     }
 
-    public Piece(Colors color, Position pos){
+    public Piece(Colors color, Position pos, MoveStrategy moveStrategy){
         this.color = color;
         this.pos = pos;
+        this.moveStrategy = moveStrategy;
     }
 
     public Position getPosition(){

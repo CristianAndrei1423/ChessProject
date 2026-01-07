@@ -143,6 +143,7 @@ public class GamePanel extends JPanel implements GameObserver {
 
         endOfGameLabelState = new JLabel();
         endOfGameLabelState.setVisible(false);
+        endOfGameLabelState.setForeground(Color.YELLOW);
 
         rightPanel.add(endOfGameLabelState);
         rightPanel.add(Box.createVerticalStrut(10));
@@ -176,12 +177,18 @@ public class GamePanel extends JPanel implements GameObserver {
     private class PieceClickListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e){
+            // If game is over, do not process clicks unless it's to trigger end game handling once
+            if(!currentGame.gameStillValid){
+                if(!endOfGameLabelState.isVisible())
+                    Main.getChessGame().handleEndGame(currentGame);
+                return;
+            }
+
             JButton piece = (JButton) e.getSource();
 
             int x = (int) piece.getClientProperty("x");
             int y = (int) piece.getClientProperty("y");
 
-            //Colors c1 = getColorFromXY(x,y);
             Colors c2 = currentGame.currentPlayerColor;
 
             Piece ps = currentGame.getBoard().getPieceAt(new Position((char)('H' - x), y + 1));
@@ -234,8 +241,9 @@ public class GamePanel extends JPanel implements GameObserver {
                 resetColor();
             }
 
+            // Check game status after move and possible computer response
             if(!currentGame.gameStillValid){
-                // the game ended lil bro
+                // the game ended
                 if(!endOfGameLabelState.isVisible())
                     Main.getChessGame().handleEndGame(currentGame);
             }
@@ -341,12 +349,10 @@ public class GamePanel extends JPanel implements GameObserver {
 
         if(currentGame.currentPlayerColor == currentGame.getOpponent().pieceColor){
             // this means it's the computer's round
-            // currentGame.runForComputer(); // -- returns true if game goes on TODO
 
             if(!currentGame.runForComputer()) {
                 // game ended
-                System.out.println("Player won");
-
+                System.out.println("Computer finished turn with End Game");
                 // don't switch player, so that the player can't do any more moves
                 return;
             }
@@ -381,10 +387,6 @@ public class GamePanel extends JPanel implements GameObserver {
 
         // update history in left panel
         updateHistoryArea();
-
-        if(currentGame.checkForCheckMate(getCurrentPlayerFromInd(currentGame.currentPlayerInd))){
-            currentGame.handleEndOfGame(2);
-        }
     }
 
     @Override
@@ -463,42 +465,42 @@ public class GamePanel extends JPanel implements GameObserver {
         Colors playerCol = currentGame.getPlayer().pieceColor;
         Colors compCol = currentGame.getOpponent().pieceColor;
 
-        // first check if a piece was captured -- DEPRECATED, USE OBSERVER
-        if(currentGame.getPlayer().nrofCapturedPieces != currentGame.getPlayer().getCapturedPieces().size()){
-            currentGame.getPlayer().nrofCapturedPieces = currentGame.getPlayer().getCapturedPieces().size();
-
-            String pieceStr = getStrFromPiece(currentGame.getPlayer().getCapturedPieces().getLast());
-
-            // change the captured pieces label
-            if(playerCol == Colors.WHITE){
-                capturedPiecesWhite.setText(capturedPiecesWhite.getText() + pieceStr);
-            } else {
-                capturedPiecesBlack.setText(capturedPiecesBlack.getText() + pieceStr);
+        StringBuilder str = new StringBuilder();
+        if(playerCol == Colors.WHITE){
+            for(Piece ps : currentGame.getPlayer().getCapturedPieces()) {
+                String s = getStrFromPiece(ps);
+                str.append(s);
             }
-        }
+            capturedPiecesWhite.setText(str.toString());
 
-        if(currentGame.getOpponent().nrofCapturedPieces != currentGame.getOpponent().getCapturedPieces().size()){
-            currentGame.getOpponent().nrofCapturedPieces = currentGame.getOpponent().getCapturedPieces().size();
-
-            String pieceStr = getStrFromPiece(currentGame.getOpponent().getCapturedPieces().getLast());
-
-            // change the captured pieces label
-            if(compCol == Colors.WHITE){
-                capturedPiecesWhite.setText(capturedPiecesWhite.getText() + pieceStr);
-            } else {
-                capturedPiecesBlack.setText(capturedPiecesBlack.getText() + pieceStr);
+            str = new StringBuilder();
+            for(Piece ps : currentGame.getOpponent().getCapturedPieces()) {
+                String s = getStrFromPiece(ps);
+                str.append(s);
             }
-        }
+            capturedPiecesBlack.setText(str.toString());
+        } else {
+            for(Piece ps : currentGame.getPlayer().getCapturedPieces()) {
+                String s = getStrFromPiece(ps);
+                str.append(s);
+            }
+            capturedPiecesBlack.setText(str.toString());
 
+            str = new StringBuilder();
+            for(Piece ps : currentGame.getOpponent().getCapturedPieces()) {
+                String s = getStrFromPiece(ps);
+                str.append(s);
+            }
+            capturedPiecesWhite.setText(str.toString());
+        }
     }
 
     public void updateHistoryArea(){
-        // take each move in moveList from game and update each time a new move is done
-        String str = historyArea.getText();
-
-        Move mv = currentGame.getMoveList().getLast();
-
-        historyArea.setText(str + "\n" + mv.toString());
+        StringBuilder str = new StringBuilder();
+        for(Move mv : currentGame.getMoveList()){
+            str.append(mv.toString()).append("\n");
+        }
+        historyArea.setText(str.toString());
     }
 
     public String getStrFromPiece(Piece piece){

@@ -16,6 +16,7 @@ public class GameExplorerPanel extends JPanel {
     private JPanel gamesButtonPanel;
     private JLabel topLabel;    // For Computer/Opponent
     private JLabel bottomLabel; // For Player/User
+    public Game gameToBeContinued;
 
     static ImageIcon[] whiteIcons;
     static ImageIcon[] blackIcons;
@@ -24,6 +25,8 @@ public class GameExplorerPanel extends JPanel {
     public GameExplorerPanel() {
         // Initialize images
         initIcons();
+
+        gameToBeContinued = null;
 
         // Main Layout
         setLayout(new BorderLayout());
@@ -52,9 +55,9 @@ public class GameExplorerPanel extends JPanel {
 
         explorerPanel.add(scrollPane, BorderLayout.CENTER);
 
-        JPanel backButtonWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        backButtonWrapper.setBackground(new Color(30, 40, 60));
-        backButtonWrapper.setBorder(new EmptyBorder(10, 0, 0, 0)); // Top padding
+        JPanel buttonsPanel = new JPanel(new GridLayout(2, 1, 0, 10));
+        buttonsPanel.setBackground(new Color(30, 40, 60));
+        buttonsPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
         JButton btnBack = new JButton("Back to Menu");
         btnBack.setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -66,16 +69,33 @@ public class GameExplorerPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 resetBoardVisuals();
+                gameToBeContinued = null;
                 MainFrame.showCard("MENU");
             }
         });
 
-        backButtonWrapper.add(btnBack);
-        explorerPanel.add(backButtonWrapper, BorderLayout.SOUTH);
+        JButton playButton = new JButton("Continue Game");
+        playButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        playButton.setBackground(Color.GRAY);
+        playButton.setForeground(Color.WHITE);
+        playButton.setFocusPainted(false);
+        playButton.setPreferredSize(new Dimension(200, 40));
+        playButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                resetBoardVisuals();
+                MainFrame.showCard("GAME");
+            }
+        });
+
+        buttonsPanel.add(playButton);
+        buttonsPanel.add(btnBack);
+
+        explorerPanel.add(buttonsPanel, BorderLayout.SOUTH);
+
 
         JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.setBackground(new Color(20, 25, 40));
-
         // -------------------------------------------------------------
 
         // -- Top Label (Opponent) --
@@ -167,8 +187,13 @@ public class GameExplorerPanel extends JPanel {
                 BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
 
-        // Add action to update the board when clicked
-        btn.addActionListener(e -> updateBoardVisuals(game));
+        btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateBoardVisuals(game);
+                gameToBeContinued = game;
+            }
+        });
 
         return btn;
     }
@@ -179,7 +204,6 @@ public class GameExplorerPanel extends JPanel {
         User currentUser = Main.getChessGame().currentUser;
         String currentEmail = (currentUser != null) ? currentUser.getEmail() : "";
 
-        // Determine which player object is "Me" and which is "Opponent"
         Player me;
         Player opponent;
 
@@ -194,8 +218,8 @@ public class GameExplorerPanel extends JPanel {
         }
 
         // Update Labels
-        bottomLabel.setText(getPlayerName(me) + " (" + me.pieceColor + ")");
-        topLabel.setText(getPlayerName(opponent) + " (" + opponent.pieceColor + ")");
+        bottomLabel.setText(game.playerAlias + " (" + currentEmail + ")");
+        topLabel.setText(getPlayerName(opponent) + " (computer)");
 
         // Determine Orientation
         boolean isWhiteView = (me.pieceColor == Colors.WHITE);
@@ -235,14 +259,10 @@ public class GameExplorerPanel extends JPanel {
     private String getPlayerName(Player p) {
         if (p == null) return "Unknown";
         String s = p.toString();
-        try {
-            int start = "Player : ".length();
-            int end = s.indexOf(" as color");
-            if (end > start) {
-                return s.substring(start, end);
-            }
-        } catch (Exception e) {
-            // Fallback if toString format changes
+        int start = "Player : ".length();
+        int end = s.indexOf(" as color");
+        if (end > start) {
+            return s.substring(start, end);
         }
         return "Unknown";
     }

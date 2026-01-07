@@ -3,6 +3,7 @@ package Utils;
 import Exceptions.InvalidCommandException;
 import Exceptions.InvalidMoveException;
 import Pieces.Piece;
+import UIPanels.GameObserver;
 import UIPanels.GamePanel;
 
 import java.util.*;
@@ -19,6 +20,18 @@ public class Game {
     public int currentPlayerInd;
     public boolean gameStillValid;
     public int endGameState;
+
+    private List<GameObserver> observers = new ArrayList<GameObserver>();
+
+    public void addObserver(GameObserver observer){
+        observers.add(observer);
+    }
+
+    private void notifiyMoveMade(Move move){
+        for(GameObserver obs : observers) {
+            obs.onMoveMade(move);
+        }
+    }
 
     public Game(int gameId){
         this.gameId = gameId;
@@ -81,89 +94,12 @@ public class Game {
 
     public void start(boolean newGame){
         // incepe un joc nou de sah
-       // if(newGame){
-            // board.initialize();
-            // gameStillValid = true;
-
-            // aici trebuie sa pun in owned pieces
-            // pentru fiecare
-
-//            if(player.pieceColor == Colors.WHITE){
-//                for(ChessPair<Position, Piece> cp : board.pieces){
-//                    if(cp.getValue().getColor() == Colors.WHITE){
-//                        player.addOwnedPiece(cp);
-//                    } else{
-//                        opponent.addOwnedPiece(cp);
-//                    }
-//                }
-//
-//            }
-//            else{
-//                for(ChessPair<Position, Piece> cp : board.pieces){
-//                    if(cp.getValue().getColor() == Colors.WHITE){
-//                        opponent.addOwnedPiece(cp);
-//                    } else{
-//                        player.addOwnedPiece(cp);
-//                    }
-//                }
-//            }
-
-//            System.out.println("Game started !");
-//
-//              currentPlayerInd = 1;
-        //}
-
-//        System.out.println("Commands : ");
-//        System.out.println(" - Get possible moves for piece : (Position)");
-//        System.out.println(" - Move piece (fromPosition-toPosition)");
-//        System.out.println(" - Forfeit (ff)");
-//        System.out.println(" - Leave game (leave)");
-
-//        while(true){
-//            // first check whether it's the player or the opponent's turn
-//            Player curPlayer;
-//
-//            if(currentPlayerInd % 2 == 1){
-//                if(player.pieceColor == Colors.WHITE)
-//                    curPlayer = player;
-//                else curPlayer = opponent;
-//            }
-//            else{
-//                if(player.pieceColor == Colors.WHITE)
-//                    curPlayer = opponent;
-//                else curPlayer = player;
-//            }
-//
-//            // System.out.println(board.toString(curPlayer.pieceColor));
-//            // update board
-//
-//
-//            for(ChessPair<Position, Piece> cp : board.pieces){
-//                System.out.print(cp.getValue().toString() + " ");
-//            }
-//
-//            System.out.println();
-//
-//            if(curPlayer.name.equals("computer")){
-//
-//                if(runForComputer())
-//                    continue;
-//                return;
-//            }
-//            else{
-//
-////                if(runForPlayer())
-////                    // jocul se continua normal
-////                    continue;
-//                return;
-//            }
-//        }
     }
 
     private boolean last3MovesSame() {
         if(moveList.size() < 6)
             return false;
-        
+
         int n = moveList.size();
         for(int i = 0 ;i<3;i++){
             if(moveList.get(n-i-1) != moveList.get(n-i-3))
@@ -179,8 +115,6 @@ public class Game {
         Player o = (ps.getColor() == player.pieceColor ? opponent : player);
 
         p.makeMove(move.getFrom(), move.getTo(), board, this, o);
-
-
     }
 
     public boolean runForComputer(){
@@ -199,24 +133,57 @@ public class Game {
 
         Random rand = new Random();
 
+        // Check if Computer has no moves (Mate or Stalemate for Computer)
         if(possibleMoves.size() == 0){
-            // here you can signal checkmate by player TODO
             System.out.println("Opponent king has no moves left");
-            handleEndOfGame(2);
+
+            boolean isCheck = false;
+            Position compKingPos = board.getKingPos(opponent.pieceColor);
+
+            // Check if any of Player's pieces attack the Computer's King
+            for(ChessPair<Position, Piece> cp : player.getOwnedPieces()){
+                if(cp.getValue().checkForCheck(board, compKingPos)){
+                    isCheck = true;
+                    break;
+                }
+            }
+
+            if(isCheck){
+                // Player wins
+                handleEndOfGame(2);
+            } else {
+                // Draw
+                handleEndOfGame(0);
+            }
+
             return false;
         }
 
         int ind = rand.nextInt(possibleMoves.size());
         Move move = possibleMoves.get(ind);
 
-        gameFrame.GamePanel.onMoveMade(move);
-        //opponent.makeMove(move.getFrom(), move.getTo(), board, this, player);
+        notifiyMoveMade(move);
+        // gameFrame.GamePanel.onMoveMade(move);
 
-        // si daca prin miracol ajunge sa ti dea mat
-        // pe langa ca esti cam praf
-
+        // Check if Player is now Checkmated or Stalemated
         if(checkForCheckMate(player)){
-            handleEndOfGame(-2);
+            boolean isCheck = false;
+            Position playerKingPos = board.getKingPos(player.pieceColor);
+
+            // Check if any of Computer's pieces attack the Player's King
+            for(ChessPair<Position, Piece> cp : opponent.getOwnedPieces()){
+                if(cp.getValue().checkForCheck(board, playerKingPos)){
+                    isCheck = true;
+                    break;
+                }
+            }
+
+            if(isCheck){
+                // Player lost
+                handleEndOfGame(-2);
+            } else {
+                handleEndOfGame(0);
+            }
             return false;
         }
 
@@ -227,7 +194,6 @@ public class Game {
             return false;
         }
 
-        // switchPlayer();
         return true;
     }
 
@@ -279,7 +245,7 @@ public class Game {
 
     public void handleEndOfGame(int state){
         // jocul marcat ca finalizat
-        System.out.println("Game is over");
+        System.out.println("Game is over. State: " + state);
         gameStillValid = false;
         // state :
         // 2 - playerul a castigat prin mat
@@ -308,7 +274,6 @@ public class Game {
     @Override
     public String toString(){
         String str = "Game id : " + this.gameId + " between " + player.toString() + " and " + opponent.toString() + "\n";
-        // return str;
         return str;
     }
 

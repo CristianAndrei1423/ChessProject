@@ -2,6 +2,7 @@ package Utils;
 
 import Exceptions.InvalidCommandException;
 import Pieces.Piece;
+import PointStrategies.*;
 import UIPanels.MainFrame;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
@@ -202,41 +203,21 @@ public class Main {
         MainFrame.gameFrame = new MainFrame();
     }
 
-    public void handleEndGame(Game game) {
-        switch(game.endGameState) {
-            case 2:{
-                System.out.println("Playerul a castigat prin mat");
-                currentUser.setPoints(currentUser.getPoints() + game.player.getPoints() + 300);
-                MainFrame.GamePanel.endOfGameLabelState.setText("Playerul a castigat prin mat");
-                // opponent -=300;
-                break;
-            }
-            case 1:{
-                System.out.println("Playerul a castigat prin ff");
-                currentUser.setPoints(currentUser.getPoints() + game.player.getPoints() + 150);
-                MainFrame.GamePanel.endOfGameLabelState.setText("Playerul a castigat prin ff");
-                // opponent -=150;
-                break;
-            }
-            case 0:{
-                System.out.println("Jocul s-a terminat prin remiza");
-                currentUser.setPoints(currentUser.getPoints() + game.player.getPoints());
-                MainFrame.GamePanel.endOfGameLabelState.setText("Jocul s-a terminat prin remiza");
-                break;
-            }
-            case -1:{
-                System.out.println("Playerul a pierdut prin ff");
-                currentUser.setPoints(currentUser.getPoints() + game.player.getPoints() - 150);
-                MainFrame.GamePanel.endOfGameLabelState.setText("Playerul a pierdut prin ff");
-                break;
-            }
-            case -2:{
-                System.out.println("Playerul a pierdut prin mat");
-                currentUser.setPoints(currentUser.getPoints() + game.player.getPoints() - 300);
-                MainFrame.GamePanel.endOfGameLabelState.setText("Playerul a pierdut prin mat");
-                break;
-            }
+    public PointsStrategy pointStrategy(int state){
+        switch(state){
+            case 2 : return new PlayerWMateStrategy();
+            case 1 : return new PlayerWFFStrategy();
+            case 0 : return new StalemateStrategy();
+            case -1 : return new PlayerLFFStrategy();
+            case -2 : return new PlayerLMateStrategy();
         }
+        return null;
+    }
+
+    public void handleEndGame(Game game) {
+        currentUser.setPoints(currentUser.getPoints() + game.player.getPoints() +
+                pointStrategy(game.endGameState).pointsDeducted());
+
         MainFrame.GamePanel.endOfGameLabelState.setVisible(true);
         gameMap.remove(game.gameId);
         currentUser.removeGame(game);

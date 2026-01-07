@@ -22,6 +22,8 @@ public class MainFrame extends JFrame {
         gameFrame = new MainFrame();
     }
 
+    // TODO : refine UI
+
     public MainFrame() {
         setTitle("ChessMaster");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -55,38 +57,53 @@ public class MainFrame extends JFrame {
             MainMenuPanel.onMenuEnter(Main.getChessGame().currentUser);
 
         if(cardName.equals("GAME")){
-            // initialize game within panel then use game
-            GameMakePanel.onGameMade();
-            Game game = GameMakePanel.gameMade;
-            GamePanel.endOfGameLabelState.setVisible(false);
 
-            // here I need to start the game
-            // equivalent to start
+            if(GameExplorerPanel.gameToBeContinued != null){
 
-            // if it's a new game, initialize everything
-            if(game.currentPlayerInd == -1) {
-                game.initalizeBoard();
-                game.gameStillValid = true;
-                game.initalizeOwnedPieces();
+                Game game = GameExplorerPanel.gameToBeContinued;
                 game.currentPlayerInd = game.getPlayer().pieceColor == Colors.WHITE ? 1 : 2;
-                // game.currentPlayerColor = Colors.WHITE;
+                GamePanel.endOfGameLabelState.setVisible(false);
                 GamePanel.currentGame = game;
                 GamePanel.isWhiteView = GamePanel.currentGame.getPlayer().pieceColor == Colors.WHITE;
                 GamePanel.updatePiecesVisual(game.getBoard());
                 System.out.println("Game started !");
+                GameExplorerPanel.gameToBeContinued = null;
+                GamePanel.updateHistoryArea();
+                GamePanel.updateCapturedPieces();
 
-                // if the first to move is the computer
-                if(game.currentPlayerColor != game.getPlayer().pieceColor){
-                    game.runForComputer();
-                    GamePanel.updatePiecesVisual(game.getBoard());
-                    game.switchPlayer();
-                }
-
-                // System.out.println(GamePanel.currentGame.getBoard().toString());
             }
+            else {
+                // initialize game within panel then use game
+                GameMakePanel.onGameMade();
+                Game game = GameMakePanel.gameMade;
+                game.addObserver(GamePanel);
+                GamePanel.endOfGameLabelState.setVisible(false);
 
-            // then I need to run the program and update on each input
-            // this is handled in GamePanel
+                // here I need to start the game
+                // equivalent to start
+
+                // if it's a new game, initialize everything
+                if(game.currentPlayerInd == -1) {
+                    game.initalizeBoard();
+                    game.gameStillValid = true;
+                    game.initalizeOwnedPieces();
+                    game.currentPlayerInd = game.getPlayer().pieceColor == Colors.WHITE ? 1 : 2;
+                    // game.currentPlayerColor = Colors.WHITE;
+                    GamePanel.currentGame = game;
+                    GamePanel.isWhiteView = GamePanel.currentGame.getPlayer().pieceColor == Colors.WHITE;
+                    GamePanel.updatePiecesVisual(game.getBoard());
+                    System.out.println("Game started !");
+                    GamePanel.updateHistoryArea();
+                    GamePanel.updateCapturedPieces();
+
+                    // if the first to move is the computer
+                    if(game.currentPlayerColor != game.getPlayer().pieceColor){
+                        game.runForComputer();
+                        GamePanel.updatePiecesVisual(game.getBoard());
+                        game.switchPlayer();
+                    }
+                }
+            }
         }
 
         if(cardName.equals("GAMEEXPLORER")){
