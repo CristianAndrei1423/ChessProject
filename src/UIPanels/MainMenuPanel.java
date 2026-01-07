@@ -42,6 +42,7 @@ public class MainMenuPanel extends JPanel implements MenuObserver {
         //btnNew.addActionListener(e -> frame.showCard("GAME"));
         btnLogout.addActionListener(new LogoutHandler());
         btnNew.addActionListener(new NewGameHandler());
+        btnContinue.addActionListener(new ContinueGameHandler());
 
         content.add(statsPanel);
         content.add(Box.createVerticalStrut(30));
@@ -65,7 +66,8 @@ public class MainMenuPanel extends JPanel implements MenuObserver {
     private class ContinueGameHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e){
-
+            // here prompt the user to the game explorer
+            MainFrame.showCard("GAMEEXPLORER");
         }
     }
 

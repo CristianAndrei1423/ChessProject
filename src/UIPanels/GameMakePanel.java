@@ -68,8 +68,6 @@ public class GameMakePanel extends JPanel implements GameMakeObserver {
     public void onGameMade() {
         Colors color = (white.isSelected() ? Colors.WHITE : Colors.BLACK);
 
-        // TODO : foloseste alias in joc
-
         Player player = new Player(Main.getChessGame().currentUser.getEmail(), color);
 
         Colors opColor = (color == Colors.BLACK ? Colors.WHITE : Colors.BLACK);
@@ -96,6 +94,9 @@ public class GameMakePanel extends JPanel implements GameMakeObserver {
         Main.getChessGame().gameMap.put(Main.getChessGame().lastGameId-1, game);
 
         gameMade = game;
+
+        gameMade.playerAlias = alias.getText();
+
     }
 
 }

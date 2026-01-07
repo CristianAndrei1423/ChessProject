@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 public class Player {
-    String name;
+    public String name;
     public Colors pieceColor;
     private List<Piece> capturedPieces;
     public int nrofCapturedPieces;

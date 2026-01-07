@@ -10,10 +10,11 @@ import java.util.*;
 import static UIPanels.MainFrame.gameFrame;
 
 public class Game {
-    int gameId;
+    public int gameId;
     Board board;
     Player player, opponent;
     List<Move> moveList;
+    public String playerAlias;
     public Colors currentPlayerColor;
     public int currentPlayerInd;
     public boolean gameStillValid;
@@ -27,6 +28,7 @@ public class Game {
         // indicate a new game
         currentPlayerInd = -1;
         currentPlayerColor = Colors.WHITE;
+        playerAlias = new String("Player");
     }
 
     public Game(int gameId, Board board){

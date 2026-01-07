@@ -16,6 +16,7 @@ public class MainFrame extends JFrame {
     private JPanel SignUpPanel;
     private static GameMakePanel GameMakePanel;
     public static MainFrame gameFrame;
+    public static GameExplorerPanel GameExplorerPanel;
 
     public static void main(String[] args){
         gameFrame = new MainFrame();
@@ -35,6 +36,7 @@ public class MainFrame extends JFrame {
         GamePanel = new GamePanel(null);
         SignUpPanel = new SignUpPanel(this);
         GameMakePanel = new GameMakePanel(this);
+        GameExplorerPanel = new GameExplorerPanel();
 
         // add the screens
         mainPanel.add(LoginPanel, "LOGIN");
@@ -42,6 +44,7 @@ public class MainFrame extends JFrame {
         mainPanel.add(GamePanel, "GAME");
         mainPanel.add(SignUpPanel, "SIGNUP");
         mainPanel.add(GameMakePanel, "NEWGAME");
+        mainPanel.add(GameExplorerPanel, "GAMEEXPLORER");
 
         add(mainPanel);
         setVisible(true);
@@ -84,6 +87,10 @@ public class MainFrame extends JFrame {
 
             // then I need to run the program and update on each input
             // this is handled in GamePanel
+        }
+
+        if(cardName.equals("GAMEEXPLORER")){
+            GameExplorerPanel.refreshGameList();
         }
 
         cardLayout.show(mainPanel, cardName);
