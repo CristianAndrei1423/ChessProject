@@ -5,7 +5,7 @@ import Pieces.Piece;
 public class Move {
     private Colors playerColor;
     private Position from, to;
-    private Piece capturedPiece;
+    private Piece piece;
 
     public Move(Colors pColor, Position from, Position to){
         playerColor = pColor;
@@ -22,5 +22,10 @@ public class Move {
     }
 
     public Colors getPlayerColor(){return playerColor;}
+
+    @Override
+    public String toString(){
+        return from.toString() + " -> " + to.toString();
+    }
 
 }

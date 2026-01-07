@@ -1,6 +1,7 @@
 package Utils;
 
 import Pieces.*;
+import UIPanels.GamePanel;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -125,6 +126,7 @@ public class Board {
 
                                     System.out.println("Remove captured piece from opponent owned piece");
                                     op.removeOwnedPiece(ps);
+
                                 }
                             } else {
                                 if(dirOfMove == 0 || dirOfMove == 6){

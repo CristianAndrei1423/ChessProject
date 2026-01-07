@@ -10,7 +10,7 @@ import java.lang.classfile.attribute.LineNumberInfo;
 public class MainFrame extends JFrame {
     private static CardLayout cardLayout;
     private static JPanel mainPanel;
-    private static GamePanel GamePanel;
+    public static GamePanel GamePanel;
     private JPanel LoginPanel;
     private static MainMenuPanel MainMenuPanel;
     private JPanel SignUpPanel;
@@ -64,11 +64,21 @@ public class MainFrame extends JFrame {
                 game.initalizeBoard();
                 game.gameStillValid = true;
                 game.initalizeOwnedPieces();
-                game.currentPlayerInd = 1;
+                game.currentPlayerInd = game.getPlayer().pieceColor == Colors.WHITE ? 1 : 2;
+                // game.currentPlayerColor = Colors.WHITE;
                 GamePanel.currentGame = game;
+                GamePanel.isWhiteView = GamePanel.currentGame.getPlayer().pieceColor == Colors.WHITE;
                 GamePanel.updatePiecesVisual(game.getBoard());
                 System.out.println("Game started !");
 
+                // if the first to move is the computer
+                if(game.currentPlayerColor != game.getPlayer().pieceColor){
+                    game.runForComputer();
+                    GamePanel.updatePiecesVisual(game.getBoard());
+                    game.switchPlayer();
+                }
+
+                // System.out.println(GamePanel.currentGame.getBoard().toString());
             }
 
             // then I need to run the program and update on each input

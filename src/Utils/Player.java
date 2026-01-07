@@ -11,6 +11,7 @@ public class Player {
     String name;
     public Colors pieceColor;
     private List<Piece> capturedPieces;
+    public int nrofCapturedPieces;
     private TreeSet<ChessPair<Position, Piece>> ownedPieces;
     private int points;
 
@@ -20,6 +21,7 @@ public class Player {
         ownedPieces = new TreeSet<ChessPair<Position, Piece>>();
         capturedPieces = new ArrayList<Piece>();
         points = 0;
+        nrofCapturedPieces = 0;
     }
 
     public void makeMove(Position from, Position to, Board board, Game game, Player opp) {

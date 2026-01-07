@@ -88,7 +88,8 @@ public class GameMakePanel extends JPanel implements GameMakeObserver {
         players.add(opp);
         game.setPlayers(players);
 
-        game.setCurrentPlayerColor(color);
+        // not good because if the player is color black, it makes a bug
+        // game.setCurrentPlayerColor(color);
 
         Main.getChessGame().currentUser.addGame(game);
 

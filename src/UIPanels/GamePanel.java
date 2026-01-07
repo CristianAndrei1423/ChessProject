@@ -19,7 +19,10 @@ public class GamePanel extends JPanel implements GameObserver {
     private JButton selectedButton;
     public Game currentGame;
     private JTextArea historyArea;
+    private JLabel capturedPiecesWhite;
+    private JLabel capturedPiecesBlack;
     private ArrayList<JButton> highlightedSquares;
+    public boolean isWhiteView; // Field to store board orientation
 
     static String[] whitePieces = {"♖","♘","♗","♕","♔","♗","♘","♖","♙"};
     static String[] blackPieces = {"♜","♞","♝","♛","♚","♝","♞","♜","♟"};
@@ -28,6 +31,9 @@ public class GamePanel extends JPanel implements GameObserver {
 
         // first update the current game
         currentGame = game;
+
+        // Determine board orientation based on the player's color
+        // this.isWhiteView = currentGame.getPlayer().pieceColor == Colors.WHITE;
 
         highlightedSquares = new ArrayList<>();
 
@@ -45,7 +51,7 @@ public class GamePanel extends JPanel implements GameObserver {
         histLabel.setForeground(Color.WHITE);
         historyPanel.add(histLabel, BorderLayout.NORTH);
 
-        historyArea = new JTextArea("Do this lil bro");
+        historyArea = new JTextArea("Game Started");
         historyArea.setBackground(new Color(30, 40, 60));
         historyArea.setForeground(new Color(148, 163, 184));
         historyPanel.add(historyArea, BorderLayout.CENTER);
@@ -65,6 +71,7 @@ public class GamePanel extends JPanel implements GameObserver {
         selectedPiece = null;
         selectedButton = null;
 
+        // Swing Grid Layout: Row 0 is TOP, Row 7 is BOTTOM
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 JButton square = new JButton();
@@ -74,9 +81,10 @@ public class GamePanel extends JPanel implements GameObserver {
 
                 square.setBorderPainted(false);
                 square.setFocusPainted(false);
-                // square.setFont(new Font("Arial", Font.PLAIN, 10));
+                // square.setFont(new Font("SansSerif", Font.PLAIN, 40));
 
                 // store the coordinates inside the button
+                // x = column (visual), y = row (visual)
                 square.putClientProperty("x", col);
                 square.putClientProperty("y", row);
 
@@ -102,8 +110,8 @@ public class GamePanel extends JPanel implements GameObserver {
         JLabel lblCap = new JLabel("Captured Pieces");
         lblCap.setForeground(Color.WHITE);
 
-        JLabel capturedPiecesWhite = new JLabel("White Captured Pieces");
-        JLabel capturedPiecesBlack = new JLabel("Black Captured Pieces");
+        capturedPiecesWhite = new JLabel("White Captured Pieces");
+        capturedPiecesBlack = new JLabel("Black Captured Pieces");
 
         capturedPiecesWhite.setAlignmentX(Component.LEFT_ALIGNMENT);
         capturedPiecesBlack.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -118,20 +126,20 @@ public class GamePanel extends JPanel implements GameObserver {
 
         JButton btnResign = createButton("Resign", new Color(239, 68, 68));
         JButton btnSave = createButton("Save & Exit", Color.ORANGE);
-        JButton btnBack = createButton("Back to Menu", Color.GRAY);
+        //JButton btnBack = createButton("Back to Menu", Color.GRAY);
 
-        btnBack.addActionListener(e -> MainFrame.showCard("MENU"));
+        btnSave.addActionListener(e -> MainFrame.showCard("MENU"));
 
         // Full width buttons
         btnResign.setMaximumSize(new Dimension(200, 40));
         btnSave.setMaximumSize(new Dimension(200, 40));
-        btnBack.setMaximumSize(new Dimension(200, 40));
+        //btnBack.setMaximumSize(new Dimension(200, 40));
 
         rightPanel.add(btnResign);
         rightPanel.add(Box.createVerticalStrut(10));
         rightPanel.add(btnSave);
-        rightPanel.add(Box.createVerticalStrut(10));
-        rightPanel.add(btnBack);
+        //rightPanel.add(Box.createVerticalStrut(10));
+        //rightPanel.add(btnBack);
 
         //------------------------------------------------------------------------
 
@@ -139,7 +147,10 @@ public class GamePanel extends JPanel implements GameObserver {
         add(boardWrapper, BorderLayout.CENTER);
         add(rightPanel, BorderLayout.EAST);
 
+        // Initial Visual Update
+        // updatePiecesVisual(currentGame.getBoard());
     }
+
     public static JButton createButton(String text, Color bg) {
         JButton btn = new JButton(text);
         btn.setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -149,7 +160,6 @@ public class GamePanel extends JPanel implements GameObserver {
         btn.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         return btn;
     }
-
 
     // class for a piece click
     private class PieceClickListener implements ActionListener {
@@ -161,55 +171,46 @@ public class GamePanel extends JPanel implements GameObserver {
             int y = (int) piece.getClientProperty("y");
 
             Colors c1 = getColorFromXY(x,y);
-            Colors c2 = getCurrentPlayerFromInd(currentGame.currentPlayerInd).pieceColor;
+            Colors c2 = currentGame.currentPlayerColor;
 
-            if(c1 != c2 && selectedPiece == null)
-                return;
-
-            // check how many times the user clicked
-            if (selectedPiece == null) {
-                // here the user selected a piece
-
-                // first check if there is a piece there and not an empty square
+            // If selecting a piece of valid color
+            // Logic: Color of piece (c1) must match Current Player's color (c2)
+            if(c1 == c2 && selectedPiece == null) {
                 if (!piece.getText().isEmpty()) {
                     selectedPiece = new Point(x, y);
                     selectedButton = piece;
                     onPieceSelected(selectedPiece);
                     piece.setBackground(Color.GRAY);
                     highlightedSquares.add(piece);
-
                 }
-
+                return;
             }
-            else {
-                // here the user wants to make a move
 
-                // !! important
-                // in highlightedSquares are the valid moves of the selected piece
-                // the code that follows assumes this
+            // check how many times the user clicked
+            if(selectedPiece != null){
+                if(highlightedSquares.contains(piece) && piece != selectedButton){
 
-                // make the move :
-                // first check if it is from the highlighted moves and not the piece
-                // I previously selected
-                if(highlightedSquares.contains(piece) && piece.getBackground() != Color.GRAY){
+                    Colors color = c2;
+                    Position from, to;
 
-                    // handle the backend :
-
-                    //!! vezi cum sunt coordonatele
-                    Colors color = getColorFromXY(selectedPiece.y + 1, selectedPiece.x);
-                    Position from = new Position((char) ('A' + selectedPiece.x), selectedPiece.y + 1);
-                    Position to = new Position((char) ('A' + x), y +1);
+                    // Convert Visual Coords (x,y) to Backend Positions based on View
+                    if(isWhiteView) {
+                        // White View: Row 0 is Rank 8, Col 0 is A
+                        from = new Position((char) ('A' + selectedPiece.x), 8 - selectedPiece.y);
+                        to = new Position((char) ('A' + x), 8 - y);
+                    } else {
+                        // Black View: Row 0 is Rank 1, Col 0 is H (Board is rotated 180)
+                        from = new Position((char) ('H' - selectedPiece.x), selectedPiece.y + 1);
+                        to = new Position((char) ('H' - x), y + 1);
+                    }
 
                     Move move = new Move(color, from, to);
-
                     onMoveMade(move);
-
                     onPlayerSwitch();
 
                     // handle the frontend/ visual :
                     updatePiecesVisual(currentGame.getBoard());
 
-                    selectedButton.setText("");
                     selectedButton = null;
 
                     System.out.println("Moved to: " + x + "," + y);
@@ -227,9 +228,10 @@ public class GamePanel extends JPanel implements GameObserver {
     }
 
     private Colors getColorFromXY(int x, int y){
-        JButton btn = squares[y][x];
+        JButton btn = squares[y][x]; // squares is [row][col]
 
         String str = btn.getText();
+        if(str == null || str.isEmpty()) return Colors.GRAY;
 
         for(String s : whitePieces)
             if(str.equals(s))
@@ -245,13 +247,23 @@ public class GamePanel extends JPanel implements GameObserver {
     // resets the highlighted squares
     private void resetColor() {
         for(JButton jb : highlightedSquares){
-            int r = (int) jb.getClientProperty("x");
-            int c = (int) jb.getClientProperty("y");
+            int c = (int) jb.getClientProperty("x");
+            int r = (int) jb.getClientProperty("y");
 
             if ((r + c) % 2 == 0) {
-                squares[c][r].setBackground(new Color(240, 217, 181));
+                squares[r][c].setBackground(new Color(240, 217, 181));
             } else {
-                squares[c][r].setBackground(new Color(181, 136, 99));
+                squares[r][c].setBackground(new Color(181, 136, 99));
+            }
+        }
+        // Also reset the selected piece color if it exists
+        if(selectedButton != null) {
+            int c = (int) selectedButton.getClientProperty("x");
+            int r = (int) selectedButton.getClientProperty("y");
+            if ((r + c) % 2 == 0) {
+                selectedButton.setBackground(new Color(240, 217, 181));
+            } else {
+                selectedButton.setBackground(new Color(181, 136, 99));
             }
         }
         highlightedSquares.clear();
@@ -273,7 +285,17 @@ public class GamePanel extends JPanel implements GameObserver {
 
     @Override
     public void onPlayerSwitch() {
+        // here whenever the player makes a move
+        // it should automatically handle the computer making a move
         currentGame.switchPlayer();
+
+        if(currentGame.currentPlayerColor == currentGame.getOpponent().pieceColor){
+            // this means it's the computer's round
+            currentGame.runForComputer(); // -- returns true if game goes on TODO
+            updatePiecesVisual(currentGame.getBoard());
+            currentGame.switchPlayer();
+        }
+
     }
 
     public Player getCurrentPlayerFromInd(int currentPlayerInd){
@@ -295,6 +317,12 @@ public class GamePanel extends JPanel implements GameObserver {
     public void onMoveMade(Move move) {
         currentGame.handleMove(move);
 
+        // if the move results in a capture, update the right panel
+        updateCapturedPieces();
+
+        // update history in left panel
+        updateHistoryArea();
+
         if(currentGame.checkForCheckMate(getCurrentPlayerFromInd(currentGame.currentPlayerInd))){
             currentGame.handleEndOfGame(2);
         }
@@ -307,70 +335,115 @@ public class GamePanel extends JPanel implements GameObserver {
 
     @Override
     public void onPieceSelected(Point point) {
-        // get the piece from the point and highlight on the board
-        // where each possible move is; put them all in highlightedSquares
-
         resetColor();
 
-        Position pos = new Position((char)('A' + point.x), point.y + 1);
-        Piece ps = currentGame.getBoard().getPieceAt(pos);
+        Position pos;
 
-        // check first if the square contains the color that the player is in
-        if(ps.getColor() != getCurrentPlayerFromInd(currentGame.currentPlayerInd).pieceColor)
+        // Convert UI Point to Backend Position
+        if(isWhiteView) {
+            pos = new Position((char)('A' + point.x), 8 - point.y);
+        } else {
+            pos = new Position((char)('H' - point.x), point.y + 1);
+        }
+
+        Piece ps = currentGame.getBoard().getPieceAt(pos);
+        if (ps == null) return;
+
+        if(ps.getColor() != currentGame.currentPlayerColor)
             return;
 
         List<Position> posMoves = ps.getPossibleMoves(currentGame.getBoard());
 
         for(Position p : posMoves){
-            JButton btn = squares[p.y-1][p.x-'A'];
-            btn.setBackground(Color.LIGHT_GRAY);
-            highlightedSquares.add(btn);
+            // Convert Backend Position to UI Grid [Row][Col]
+            int uiRow, uiCol;
+
+            if(isWhiteView) {
+                uiRow = 8 - p.y;
+                uiCol = p.x - 'A';
+            } else {
+                uiRow = p.y - 1; // Rank 1 is at Row 0
+                uiCol = 'H' - p.x; // File H is at Col 0
+            }
+
+            // Bounds check
+            if(uiRow >= 0 && uiRow < 8 && uiCol >= 0 && uiCol < 8) {
+                JButton btn = squares[uiRow][uiCol];
+                btn.setBackground(Color.LIGHT_GRAY);
+                highlightedSquares.add(btn);
+            }
         }
     }
 
     public void updatePiecesVisual(Board board){
+        // Loop through the VISUAL grid (0,0 is Top-Left)
+        for(int row = 0 ; row < 8; row++) {
+            for(int col = 0; col < 8; col++) {
 
-        if(currentGame.getPlayer().pieceColor == Colors.WHITE) {
-            for(int row = 0 ; row <8; row++) {
-                for(int col = 0; col <8; col++) {
-                    Position pos = new Position((char)('A' + 7 - col),  8 - row);
-                    Piece ps = board.getPieceAt(pos);
-                    if(ps == null)
-                        continue;
-
-                    String str = getStrFromPiece(ps);
-                    squares[row][col].setText(str);
-
+                Position pos;
+                if(isWhiteView) {
+                    // White View: Row 0 = Rank 8, Col 0 = A
+                    pos = new Position((char)('A' + col), 8 - row);
+                } else {
+                    // Black View: Row 0 = Rank 1, Col 0 = H
+                    pos = new Position((char)('H' - col), row + 1);
                 }
-            }
-        } else{
-            for(int row = 0 ; row <8; row++) {
-                for(int col = 0; col <8; col++) {
-                    Position pos = new Position((char)('A' + col),  row +1);
-                    Piece ps = board.getPieceAt(pos);
-                    if(ps == null)
-                        continue;
 
+                Piece ps = board.getPieceAt(pos);
+
+                if(ps == null) {
+                    squares[row][col].setText("");
+                } else {
                     String str = getStrFromPiece(ps);
                     squares[row][col].setText(str);
-
                 }
             }
         }
-
-
     }
 
     public void updateCapturedPieces(){
         // TODO : update captured pieces on capture
+        // update captured pieces based on each player's captured pieces
 
+        Colors playerCol = currentGame.getPlayer().pieceColor;
+        Colors compCol = currentGame.getOpponent().pieceColor;
 
+        // first check if a piece was captured -- DEPRECATED, USE OBSERVER
+        if(currentGame.getPlayer().nrofCapturedPieces != currentGame.getPlayer().getCapturedPieces().size()){
+            currentGame.getPlayer().nrofCapturedPieces = currentGame.getPlayer().getCapturedPieces().size();
+
+            String pieceStr = getStrFromPiece(currentGame.getPlayer().getCapturedPieces().getLast());
+
+            // change the captured pieces label
+            if(playerCol == Colors.WHITE){
+                capturedPiecesWhite.setText(capturedPiecesWhite.getText() + pieceStr);
+            } else {
+                capturedPiecesBlack.setText(capturedPiecesBlack.getText() + pieceStr);
+            }
+        }
+
+        if(currentGame.getOpponent().nrofCapturedPieces != currentGame.getOpponent().getCapturedPieces().size()){
+            currentGame.getOpponent().nrofCapturedPieces = currentGame.getOpponent().getCapturedPieces().size();
+
+            String pieceStr = getStrFromPiece(currentGame.getOpponent().getCapturedPieces().getLast());
+
+            // change the captured pieces label
+            if(compCol == Colors.WHITE){
+                capturedPiecesWhite.setText(capturedPiecesWhite.getText() + pieceStr);
+            } else {
+                capturedPiecesBlack.setText(capturedPiecesBlack.getText() + pieceStr);
+            }
+        }
 
     }
 
     public void updateHistoryArea(){
-        // TODO : update history area
+        // take each move in moveList from game and update each time a new move is done
+        String str = historyArea.getText();
 
+        Move mv = currentGame.getMoveList().getLast();
+
+        historyArea.setText(str + "\n" + mv.toString());
     }
 
     public String getStrFromPiece(Piece piece){
@@ -380,34 +453,22 @@ public class GamePanel extends JPanel implements GameObserver {
 
         if(piece.getColor() == Colors.WHITE){
             switch (piece.type()){
-                case 'N':
-                    return whitePieces[1];
-                case 'R':
-                    return whitePieces[0];
-                case 'B':
-                    return whitePieces[2];
-                case 'Q':
-                    return whitePieces[3];
-                case 'K':
-                    return whitePieces[4];
-                case 'P':
-                    return whitePieces[8];
+                case 'N': return whitePieces[1];
+                case 'R': return whitePieces[0];
+                case 'B': return whitePieces[2];
+                case 'Q': return whitePieces[3];
+                case 'K': return whitePieces[4];
+                case 'P': return whitePieces[8];
             }
         }
         else{
             switch (piece.type()){
-                case 'N':
-                    return blackPieces[1];
-                case 'R':
-                    return blackPieces[0];
-                case 'B':
-                    return blackPieces[2];
-                case 'Q':
-                    return blackPieces[3];
-                case 'K':
-                    return blackPieces[4];
-                case 'P':
-                    return blackPieces[8];
+                case 'N': return blackPieces[1];
+                case 'R': return blackPieces[0];
+                case 'B': return blackPieces[2];
+                case 'Q': return blackPieces[3];
+                case 'K': return blackPieces[4];
+                case 'P': return blackPieces[8];
             }
         }
         return null;

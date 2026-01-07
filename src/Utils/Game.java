@@ -3,15 +3,18 @@ package Utils;
 import Exceptions.InvalidCommandException;
 import Exceptions.InvalidMoveException;
 import Pieces.Piece;
+import UIPanels.GamePanel;
 
 import java.util.*;
+
+import static UIPanels.MainFrame.gameFrame;
 
 public class Game {
     int gameId;
     Board board;
     Player player, opponent;
     List<Move> moveList;
-    Colors currentPlayerColor;
+    public Colors currentPlayerColor;
     public int currentPlayerInd;
     public boolean gameStillValid;
     public int endGameState;
@@ -23,6 +26,7 @@ public class Game {
         gameStillValid = true;
         // indicate a new game
         currentPlayerInd = -1;
+        currentPlayerColor = Colors.WHITE;
     }
 
     public Game(int gameId, Board board){
@@ -73,10 +77,9 @@ public class Game {
         return opponent;
     }
 
-
     public void start(boolean newGame){
         // incepe un joc nou de sah
-        if(newGame){
+       // if(newGame){
             // board.initialize();
             // gameStillValid = true;
 
@@ -106,7 +109,7 @@ public class Game {
 //            System.out.println("Game started !");
 //
 //              currentPlayerInd = 1;
-        }
+        //}
 
 //        System.out.println("Commands : ");
 //        System.out.println(" - Get possible moves for piece : (Position)");
@@ -114,45 +117,45 @@ public class Game {
 //        System.out.println(" - Forfeit (ff)");
 //        System.out.println(" - Leave game (leave)");
 
-        while(true){
-            // first check whether it's the player or the opponent's turn
-            Player curPlayer;
-
-            if(currentPlayerInd % 2 == 1){
-                if(player.pieceColor == Colors.WHITE)
-                    curPlayer = player;
-                else curPlayer = opponent;
-            }
-            else{
-                if(player.pieceColor == Colors.WHITE)
-                    curPlayer = opponent;
-                else curPlayer = player;
-            }
-
-            // System.out.println(board.toString(curPlayer.pieceColor));
-            // update board
-
-
-            for(ChessPair<Position, Piece> cp : board.pieces){
-                System.out.print(cp.getValue().toString() + " ");
-            }
-
-            System.out.println();
-
-            if(curPlayer.name.equals("computer")){
-
-                if(runForComputer())
-                    continue;
-                return;
-            }
-            else{
-
-                if(runForPlayer())
-                    // jocul se continua normal
-                    continue;
-                return;
-            }
-        }
+//        while(true){
+//            // first check whether it's the player or the opponent's turn
+//            Player curPlayer;
+//
+//            if(currentPlayerInd % 2 == 1){
+//                if(player.pieceColor == Colors.WHITE)
+//                    curPlayer = player;
+//                else curPlayer = opponent;
+//            }
+//            else{
+//                if(player.pieceColor == Colors.WHITE)
+//                    curPlayer = opponent;
+//                else curPlayer = player;
+//            }
+//
+//            // System.out.println(board.toString(curPlayer.pieceColor));
+//            // update board
+//
+//
+//            for(ChessPair<Position, Piece> cp : board.pieces){
+//                System.out.print(cp.getValue().toString() + " ");
+//            }
+//
+//            System.out.println();
+//
+//            if(curPlayer.name.equals("computer")){
+//
+//                if(runForComputer())
+//                    continue;
+//                return;
+//            }
+//            else{
+//
+////                if(runForPlayer())
+////                    // jocul se continua normal
+////                    continue;
+//                return;
+//            }
+//        }
     }
 
     private boolean last3MovesSame() {
@@ -167,97 +170,6 @@ public class Game {
         return true;
     }
 
-    private boolean runForPlayer(){
-        // daca functia se termina in
-        // true - jocul se continua normal
-        // false - jocul s-a terminat sau s-a a fost pus pe pauza (leave)
-
-        int option = 0;
-        String ans;
-
-//        while(true){
-//            try{
-//                ans = s.next();
-//                // step 1
-//                option = handleInput(ans);
-//            } catch (InvalidCommandException e){
-//                System.out.println(e);
-//                continue;
-//            }
-//            break;
-//        }
-
-        // first check if it is a move
-//        if(option == 1){
-//            String str = "" + ans.charAt(0) + ans.charAt(1);
-//            Position from = new Position();
-//            from = from.fromString(str);
-//            Position to = new Position();
-//            str = "" + ans.charAt(3) + ans.charAt(4);
-//            to = to.fromString(str);
-//
-//            if(to != null && from != null && board.getPieceAt(from) != null &&
-//                    board.isValidMove(from, to, board.getPieceAt(from)) &&
-//                    board.getPieceAt(from).getColor() == player.pieceColor) {
-//                // moveList.add(board.movePiece(from, to, curPlayer));
-//                try{
-//                    player.makeMove(from, to, board, this, opponent);
-//                } catch (InvalidMoveException e){
-//                    // aici nu se poate intampla nimic
-//                    // pentru ca deja miscarea e validata ca fiind corecta
-//                    System.out.println(e);
-//                    return runForPlayer(s);
-//                }
-//                // daca e sah mat dupa runda playerului curent inseamna
-//                // logic ca el a facut o mutare care l-a pus pe oponent
-//                // in mat
-//
-//
-//                switchPlayer();
-//            }
-//            else{
-//                System.out.println("Invalid move");
-//                return runForPlayer(s);
-//            }
-//        }
-//
-//        // then check if the user wants to see possible moves
-//        if(option == 2){
-//            // if the user provide something outrageous it is just
-//            // discarded as an invalid position
-//
-//            Position pos = Position.fromString(ans);
-//
-//            Piece ps = board.getPieceAt(pos);
-//
-//            if(ps == null)
-//                System.out.println("Invalid piece");
-//
-//
-//            List<Position> posMoves = ps.getPossibleMoves(board);
-//
-//            System.out.println("Possible moves for " + ps.type());
-//
-//            for(Position i : posMoves){
-//                System.out.print(i.toString() + " ");
-//            }
-//            System.out.println();
-//        }
-
-        // then if player wants to ff
-        if(option == 3){
-            handleEndOfGame(-1);
-            return false;
-        }
-
-        // then if player wants to leave game
-        if(option == 4){
-            // doar da return
-            return false;
-        }
-
-        return true;
-    }
 
     public void handleMove(Move move) {
         Piece ps = board.getPieceAt(move.getFrom());
@@ -270,7 +182,7 @@ public class Game {
 
     }
 
-    private boolean runForComputer(){
+    public boolean runForComputer(){
         List<Move> possibleMoves = new ArrayList<Move>();
 
         List<ChessPair<Position, Piece>> ownPieces = opponent.getOwnedPieces();
@@ -293,7 +205,8 @@ public class Game {
         int ind = rand.nextInt(possibleMoves.size());
         Move move = possibleMoves.get(ind);
 
-        opponent.makeMove(move.getFrom(), move.getTo(), board, this, player);
+        gameFrame.GamePanel.onMoveMade(move);
+        //opponent.makeMove(move.getFrom(), move.getTo(), board, this, player);
 
         // si daca prin miracol ajunge sa ti dea mat
         // pe langa ca esti cam praf
@@ -310,18 +223,9 @@ public class Game {
             return false;
         }
 
-        switchPlayer();
+        // switchPlayer();
         return true;
     }
-
-//    public void resume(Scanner s){
-//
-//        if (this.currentPlayerColor == Colors.WHITE) this.currentPlayerInd = 1;
-//        else this.currentPlayerInd = 0;
-//
-//        System.out.println("Resumed game with index "+ this.gameId);
-//        start(false, s);
-//    }
 
     public void switchPlayer(){
         currentPlayerInd++;
