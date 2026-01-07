@@ -199,6 +199,7 @@ public class Game {
         Random rand = new Random();
 
         if(possibleMoves.size() == 0){
+            // here you can signal checkmate by player TODO
             System.out.println();
         }
 
@@ -290,6 +291,7 @@ public class Game {
         Main.getChessGame().write();
 
         if(game.gameStillValid){
+            // if it works it works ig
             Main.getChessGame().gameMap.remove(Main.getChessGame().lastGameId-1);
             Main.getChessGame().gameMap.put(Main.getChessGame().lastGameId-1, game);
         }

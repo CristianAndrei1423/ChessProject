@@ -257,13 +257,15 @@ public class Board {
 
                         Piece piesadinSpate = piesaDinSpate.getFirst();
 
-                        if (indDir == 0 || indDir == 2 || indDir == 4 || indDir == 6) {
-                            if (piesadinSpate instanceof Bishop || piesadinSpate instanceof Queen)
-                                return false;
-                        } else if (piesadinSpate instanceof Rook) {
-                            return false;
-                        }
+                        if(piesadinSpate.getColor() != piece.getColor()) {
 
+                            if (indDir == 0 || indDir == 2 || indDir == 4 || indDir == 6) {
+                                if (piesadinSpate instanceof Bishop || piesadinSpate instanceof Queen)
+                                    return false;
+                            } else if (piesadinSpate instanceof Rook) {
+                                return false;
+                            }
+                        }
                     }
                 }
             }
@@ -286,9 +288,19 @@ public class Board {
                     // mutarea poate fi valida
                     Position kingPos = getKingPos(piece.getColor());
                     Position attackingPiecePos = checkingPieces.getFirst().getKey();
+                    Piece attackingPiece = checkingPieces.getFirst().getValue();
 
-                    if(!Position.trajectory(attackingPiecePos, kingPos).contains(to) && !(piece instanceof King))
-                        return false;
+
+                    // bugfixed : check if the attacking piece is a knight
+                    // to avoid infinite yield
+                    if (attackingPiece instanceof Knight) {
+                        if (!to.equals(attackingPiecePos) && !(piece instanceof King)) {
+                            return false;
+                        }
+                    } else {
+                        if(!Position.trajectory(attackingPiecePos, kingPos).contains(to) && !(piece instanceof King))
+                            return false;
+                    }
                 }
             }
 

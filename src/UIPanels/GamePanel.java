@@ -27,15 +27,19 @@ public class GamePanel extends JPanel implements GameObserver {
     static String[] whitePieces = {"♖","♘","♗","♕","♔","♗","♘","♖","♙"};
     static String[] blackPieces = {"♜","♞","♝","♛","♚","♝","♞","♜","♟"};
 
+    static ImageIcon[] whiteIcons;
+    static ImageIcon[] blackIcons;
+    static ImageIcon empty;
+
     public GamePanel(Game game){
 
         // first update the current game
         currentGame = game;
 
-        // Determine board orientation based on the player's color
-        // this.isWhiteView = currentGame.getPlayer().pieceColor == Colors.WHITE;
-
         highlightedSquares = new ArrayList<>();
+
+        // initalize the icons
+        initIcons();
 
         // initialize the GamePanel
         setLayout(new BorderLayout());
@@ -128,7 +132,8 @@ public class GamePanel extends JPanel implements GameObserver {
         JButton btnSave = createButton("Save & Exit", Color.ORANGE);
         //JButton btnBack = createButton("Back to Menu", Color.GRAY);
 
-        btnSave.addActionListener(e -> MainFrame.showCard("MENU"));
+        btnSave.addActionListener(new SaveAndExitListener());
+        btnResign.addActionListener(new ForfeitListener());
 
         // Full width buttons
         btnResign.setMaximumSize(new Dimension(200, 40));
@@ -170,41 +175,41 @@ public class GamePanel extends JPanel implements GameObserver {
             int x = (int) piece.getClientProperty("x");
             int y = (int) piece.getClientProperty("y");
 
-            Colors c1 = getColorFromXY(x,y);
+            //Colors c1 = getColorFromXY(x,y);
             Colors c2 = currentGame.currentPlayerColor;
 
-            // If selecting a piece of valid color
-            // Logic: Color of piece (c1) must match Current Player's color (c2)
-            if(c1 == c2 && selectedPiece == null) {
-                if (!piece.getText().isEmpty()) {
-                    selectedPiece = new Point(x, y);
-                    selectedButton = piece;
-                    onPieceSelected(selectedPiece);
-                    piece.setBackground(Color.GRAY);
-                    highlightedSquares.add(piece);
+            Piece ps = currentGame.getBoard().getPieceAt(new Position((char)('H' - x), y + 1));
+            if(isWhiteView)
+                ps = currentGame.getBoard().getPieceAt(new Position((char)('A' + x), 8 - y));
+
+            if(ps != null){
+                Colors c1 = ps.getColor();
+                if(c1 == c2 && selectedPiece == null) {
+                    if (!piece.getIcon().equals(empty)) {
+                        selectedPiece = new Point(x, y);
+                        selectedButton = piece;
+                        onPieceSelected(selectedPiece);
+                        piece.setBackground(Color.GRAY);
+                        highlightedSquares.add(piece);
+                    }
+                    return;
                 }
-                return;
             }
 
             // check how many times the user clicked
             if(selectedPiece != null){
                 if(highlightedSquares.contains(piece) && piece != selectedButton){
-
-                    Colors color = c2;
                     Position from, to;
-
-                    // Convert Visual Coords (x,y) to Backend Positions based on View
+                    // convert button coords to board coords
                     if(isWhiteView) {
-                        // White View: Row 0 is Rank 8, Col 0 is A
                         from = new Position((char) ('A' + selectedPiece.x), 8 - selectedPiece.y);
                         to = new Position((char) ('A' + x), 8 - y);
                     } else {
-                        // Black View: Row 0 is Rank 1, Col 0 is H (Board is rotated 180)
                         from = new Position((char) ('H' - selectedPiece.x), selectedPiece.y + 1);
                         to = new Position((char) ('H' - x), y + 1);
                     }
 
-                    Move move = new Move(color, from, to);
+                    Move move = new Move(c2, from, to);
                     onMoveMade(move);
                     onPlayerSwitch();
 
@@ -225,6 +230,26 @@ public class GamePanel extends JPanel implements GameObserver {
 
         }
 
+    }
+
+    private class SaveAndExitListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // AFAI this works
+            currentGame.handleExitGame(currentGame);
+            MainFrame.showCard("MENU");
+        }
+    }
+
+    private class ForfeitListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            currentGame.handleEndOfGame(-1);
+            currentGame.handleExitGame(currentGame);
+            MainFrame.showCard("MENU");
+        }
     }
 
     private Colors getColorFromXY(int x, int y){
@@ -269,18 +294,31 @@ public class GamePanel extends JPanel implements GameObserver {
         highlightedSquares.clear();
     }
 
-    // class for the menu button
-    private class MenuButtonListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // when the user wants to return to the menu
-            onMenuButtonClicked();
-        }
-    }
+    private void initIcons(){
+        whiteIcons = new ImageIcon[9];
+        blackIcons = new ImageIcon[9];
 
-    @Override
-    public void onMenuButtonClicked() {
-        // TODO : implement logic for exit
+        whiteIcons[0] = new ImageIcon("src/ChessImages/WhiteRook.png");
+        whiteIcons[1] = new ImageIcon("src/ChessImages/WhiteKnight.png");
+        whiteIcons[2] = new ImageIcon("src/ChessImages/WhiteBishop.png");
+        whiteIcons[3] = new ImageIcon("src/ChessImages/WhiteQueen.png");
+        whiteIcons[4] = new ImageIcon("src/ChessImages/WhiteKing.png");
+        whiteIcons[8] = new ImageIcon("src/ChessImages/WhitePawn.png");
+        whiteIcons[5] = whiteIcons[2];
+        whiteIcons[6] = whiteIcons[1];
+        whiteIcons[7] = whiteIcons[0];
+
+        blackIcons[0] = new ImageIcon("src/ChessImages/BlackRook.png");
+        blackIcons[1] = new ImageIcon("src/ChessImages/BlackKnight.png");
+        blackIcons[2] = new ImageIcon("src/ChessImages/BlackBishop.png");
+        blackIcons[3] = new ImageIcon("src/ChessImages/BlackQueen.png");
+        blackIcons[4] = new ImageIcon("src/ChessImages/BlackKing.png");
+        blackIcons[8] = new ImageIcon("src/ChessImages/BlackPawn.png");
+        blackIcons[5] = blackIcons[2];
+        blackIcons[6] = blackIcons[1];
+        blackIcons[7] = blackIcons[0];
+
+        empty = new ImageIcon("src/ChessImages/Empty.png");
     }
 
     @Override
@@ -338,8 +376,6 @@ public class GamePanel extends JPanel implements GameObserver {
         resetColor();
 
         Position pos;
-
-        // Convert UI Point to Backend Position
         if(isWhiteView) {
             pos = new Position((char)('A' + point.x), 8 - point.y);
         } else {
@@ -354,19 +390,18 @@ public class GamePanel extends JPanel implements GameObserver {
 
         List<Position> posMoves = ps.getPossibleMoves(currentGame.getBoard());
 
+        posMoves = ps.getPossibleMoves(currentGame.getBoard());
+
         for(Position p : posMoves){
             // Convert Backend Position to UI Grid [Row][Col]
             int uiRow, uiCol;
-
             if(isWhiteView) {
                 uiRow = 8 - p.y;
                 uiCol = p.x - 'A';
             } else {
-                uiRow = p.y - 1; // Rank 1 is at Row 0
-                uiCol = 'H' - p.x; // File H is at Col 0
+                uiRow = p.y - 1;
+                uiCol = 'H' - p.x;
             }
-
-            // Bounds check
             if(uiRow >= 0 && uiRow < 8 && uiCol >= 0 && uiCol < 8) {
                 JButton btn = squares[uiRow][uiCol];
                 btn.setBackground(Color.LIGHT_GRAY);
@@ -382,27 +417,26 @@ public class GamePanel extends JPanel implements GameObserver {
 
                 Position pos;
                 if(isWhiteView) {
-                    // White View: Row 0 = Rank 8, Col 0 = A
                     pos = new Position((char)('A' + col), 8 - row);
                 } else {
-                    // Black View: Row 0 = Rank 1, Col 0 = H
                     pos = new Position((char)('H' - col), row + 1);
                 }
 
                 Piece ps = board.getPieceAt(pos);
 
                 if(ps == null) {
-                    squares[row][col].setText("");
+                    squares[row][col].setIcon(empty);
                 } else {
-                    String str = getStrFromPiece(ps);
-                    squares[row][col].setText(str);
+                    squares[row][col].setIcon(getIconFromPiece(ps));
                 }
             }
         }
+
+        System.out.println(currentGame.getBoard().toString(Colors.WHITE));
+
     }
 
     public void updateCapturedPieces(){
-        // TODO : update captured pieces on capture
         // update captured pieces based on each player's captured pieces
 
         Colors playerCol = currentGame.getPlayer().pieceColor;
@@ -472,5 +506,33 @@ public class GamePanel extends JPanel implements GameObserver {
             }
         }
         return null;
+    }
+
+    public ImageIcon getIconFromPiece(Piece piece){
+
+        if(piece == null)
+            return null;
+
+        if(piece.getColor() == Colors.WHITE){
+            switch (piece.type()){
+                case 'N': return whiteIcons[1];
+                case 'R': return whiteIcons[0];
+                case 'B': return whiteIcons[2];
+                case 'Q': return whiteIcons[3];
+                case 'K': return whiteIcons[4];
+                case 'P': return whiteIcons[8];
+            }
+        }
+        else{
+            switch (piece.type()){
+                case 'N': return blackIcons[1];
+                case 'R': return blackIcons[0];
+                case 'B': return blackIcons[2];
+                case 'Q': return blackIcons[3];
+                case 'K': return blackIcons[4];
+                case 'P': return blackIcons[8];
+            }
+        }
+        return empty;
     }
 }
