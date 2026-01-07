@@ -210,7 +210,7 @@ public class Board {
             if(piece instanceof King) {
                 // vreau sa vad daca nu se pune in sah singur
                 int[] dirs = {0, 1, 2, 3, 4, 5, 6, 7};
-
+                // TODO : se pune singur in sah atunci cand piesa atacanta e cal
                 List<Piece> intersPieces = Piece.axesInters(this, to, dirs);
 
                 for (Piece ps : intersPieces) {

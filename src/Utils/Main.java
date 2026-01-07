@@ -207,33 +207,37 @@ public class Main {
             case 2:{
                 System.out.println("Playerul a castigat prin mat");
                 currentUser.setPoints(currentUser.getPoints() + game.player.getPoints() + 300);
+                MainFrame.GamePanel.endOfGameLabelState.setText("Playerul a castigat prin mat");
                 // opponent -=300;
                 break;
             }
             case 1:{
                 System.out.println("Playerul a castigat prin ff");
                 currentUser.setPoints(currentUser.getPoints() + game.player.getPoints() + 150);
+                MainFrame.GamePanel.endOfGameLabelState.setText("Playerul a castigat prin ff");
                 // opponent -=150;
                 break;
             }
             case 0:{
                 System.out.println("Jocul s-a terminat prin remiza");
                 currentUser.setPoints(currentUser.getPoints() + game.player.getPoints());
+                MainFrame.GamePanel.endOfGameLabelState.setText("Jocul s-a terminat prin remiza");
                 break;
             }
             case -1:{
                 System.out.println("Playerul a pierdut prin ff");
                 currentUser.setPoints(currentUser.getPoints() + game.player.getPoints() - 150);
+                MainFrame.GamePanel.endOfGameLabelState.setText("Playerul a pierdut prin ff");
                 break;
             }
             case -2:{
                 System.out.println("Playerul a pierdut prin mat");
                 currentUser.setPoints(currentUser.getPoints() + game.player.getPoints() - 300);
+                MainFrame.GamePanel.endOfGameLabelState.setText("Playerul a pierdut prin mat");
                 break;
             }
-
         }
-
+        MainFrame.GamePanel.endOfGameLabelState.setVisible(true);
         gameMap.remove(game.gameId);
         currentUser.removeGame(game);
     }

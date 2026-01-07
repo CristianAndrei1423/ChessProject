@@ -21,6 +21,7 @@ public class GamePanel extends JPanel implements GameObserver {
     private JTextArea historyArea;
     private JLabel capturedPiecesWhite;
     private JLabel capturedPiecesBlack;
+    public JLabel endOfGameLabelState;
     private ArrayList<JButton> highlightedSquares;
     public boolean isWhiteView; // Field to store board orientation
 
@@ -140,6 +141,11 @@ public class GamePanel extends JPanel implements GameObserver {
         btnSave.setMaximumSize(new Dimension(200, 40));
         //btnBack.setMaximumSize(new Dimension(200, 40));
 
+        endOfGameLabelState = new JLabel();
+        endOfGameLabelState.setVisible(false);
+
+        rightPanel.add(endOfGameLabelState);
+        rightPanel.add(Box.createVerticalStrut(10));
         rightPanel.add(btnResign);
         rightPanel.add(Box.createVerticalStrut(10));
         rightPanel.add(btnSave);
@@ -226,6 +232,12 @@ public class GamePanel extends JPanel implements GameObserver {
 
                 // reset the highlighted squares
                 resetColor();
+            }
+
+            if(!currentGame.gameStillValid){
+                // the game ended lil bro
+                if(!endOfGameLabelState.isVisible())
+                    Main.getChessGame().handleEndGame(currentGame);
             }
 
         }
@@ -329,7 +341,16 @@ public class GamePanel extends JPanel implements GameObserver {
 
         if(currentGame.currentPlayerColor == currentGame.getOpponent().pieceColor){
             // this means it's the computer's round
-            currentGame.runForComputer(); // -- returns true if game goes on TODO
+            // currentGame.runForComputer(); // -- returns true if game goes on TODO
+
+            if(!currentGame.runForComputer()) {
+                // game ended
+                System.out.println("Player won");
+
+                // don't switch player, so that the player can't do any more moves
+                return;
+            }
+
             updatePiecesVisual(currentGame.getBoard());
             currentGame.switchPlayer();
         }
@@ -432,7 +453,7 @@ public class GamePanel extends JPanel implements GameObserver {
             }
         }
 
-        System.out.println(currentGame.getBoard().toString(Colors.WHITE));
+        // System.out.println(currentGame.getBoard().toString(Colors.WHITE));
 
     }
 

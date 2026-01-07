@@ -170,7 +170,6 @@ public class Game {
         return true;
     }
 
-
     public void handleMove(Move move) {
         Piece ps = board.getPieceAt(move.getFrom());
 
@@ -200,7 +199,9 @@ public class Game {
 
         if(possibleMoves.size() == 0){
             // here you can signal checkmate by player TODO
-            System.out.println();
+            System.out.println("Opponent king has no moves left");
+            handleEndOfGame(2);
+            return false;
         }
 
         int ind = rand.nextInt(possibleMoves.size());
@@ -295,7 +296,11 @@ public class Game {
             Main.getChessGame().gameMap.remove(Main.getChessGame().lastGameId-1);
             Main.getChessGame().gameMap.put(Main.getChessGame().lastGameId-1, game);
         }
-        else Main.getChessGame().handleEndGame(game);
+        // already handled in PieceClickListener
+        else {
+            if(!gameFrame.GamePanel.endOfGameLabelState.isVisible())
+                Main.getChessGame().handleEndGame(game);
+        }
     }
 
     @Override

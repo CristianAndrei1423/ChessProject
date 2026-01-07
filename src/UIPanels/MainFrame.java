@@ -55,6 +55,7 @@ public class MainFrame extends JFrame {
             // initialize game within panel then use game
             GameMakePanel.onGameMade();
             Game game = GameMakePanel.gameMade;
+            GamePanel.endOfGameLabelState.setVisible(false);
 
             // here I need to start the game
             // equivalent to start
