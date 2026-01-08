@@ -184,8 +184,6 @@ public class Board {
         return null;
     }
 
-
-
     public Position getKingPos(Colors color){
         for(ChessPair<Position, Piece> cp : pieces){
             Piece ps = cp.getValue();
@@ -249,35 +247,40 @@ public class Board {
 
         // check if the king is safe after this move
         boolean isKingSafe = true;
-        Position kingPos = getKingPos(piece.getColor());
+        // try finally block because it needs to revert even if it results in error
 
-        //check if it's under attack
-        if (kingPos != null) {
-            for (ChessPair<Position, Piece> cp : pieces) {
-                Piece enemy = cp.getValue();
-                // if it's an enemy piece, check if it attacks the king
-                if (enemy.getColor() != piece.getColor()) {
-                    if (enemy.checkForCheck(this, kingPos)) {
-                        // it is checked
-                        isKingSafe = false;
-                        break;
+        try {
+            Position kingPos = getKingPos(piece.getColor());
+
+            //check if it's under attack
+            if (kingPos != null) {
+                for (ChessPair<Position, Piece> cp : pieces) {
+                    Piece enemy = cp.getValue();
+                    // if it's an enemy piece, check if it attacks the king
+                    if (enemy.getColor() != piece.getColor()) {
+                        if (enemy.checkForCheck(this, kingPos)) {
+                            // it is checked
+                            isKingSafe = false;
+                            break;
+                        }
                     }
                 }
             }
+        } finally {
+            // revert the board state
+
+            // remove the piece from the treeset
+            pieces.remove(new ChessPair<>(to, piece));
+
+            // restore position
+            piece.setPosition(originalPos);
+
+            // add back to from
+            pieces.add(originalPair);
+
+            // add back the captured piece (if any)
+            if (targetPair != null) pieces.add(targetPair);
         }
-        // revert the board state
-
-        // remove the piece from the treeset
-        pieces.remove(new ChessPair<>(to, piece));
-
-        // restore position
-        piece.setPosition(originalPos);
-
-        // add back to from
-        pieces.add(originalPair);
-
-        // add back the captured piece (if any)
-        if (targetPair != null) pieces.add(targetPair);
 
         return isKingSafe;
     }

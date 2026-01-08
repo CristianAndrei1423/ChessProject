@@ -17,6 +17,7 @@ public class GameExplorerPanel extends JPanel {
     private final JLabel topLabel;    // For Computer/Opponent
     private final JLabel bottomLabel; // For Player/User
     public Game gameToBeContinued;
+    private final JButton playButton;
 
     static ImageIcon[] whiteIcons;
     static ImageIcon[] blackIcons;
@@ -74,7 +75,7 @@ public class GameExplorerPanel extends JPanel {
             }
         });
 
-        JButton playButton = new JButton("Continue Game");
+        playButton = new JButton("Continue Game");
         playButton.setFont(new Font("SansSerif", Font.BOLD, 14));
         playButton.setBackground(Color.GRAY);
         playButton.setForeground(Color.WHITE);
@@ -87,6 +88,9 @@ public class GameExplorerPanel extends JPanel {
                 MainFrame.showCard("GAME");
             }
         });
+
+        // set invisible until user selects a game
+        playButton.setVisible(false);
 
         buttonsPanel.add(playButton);
         buttonsPanel.add(btnBack);
@@ -186,6 +190,7 @@ public class GameExplorerPanel extends JPanel {
         btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                playButton.setVisible(true);
                 updateBoardVisuals(game);
                 gameToBeContinued = game;
             }

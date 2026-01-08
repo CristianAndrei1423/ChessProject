@@ -18,17 +18,23 @@ public class PawnMoveStrategy implements MoveStrategy{
         Position nextPos;
         Piece curPiece = board.getPieceAt(from);
 
+        if (curPiece == null) return posMoves;
+
         if(curPiece.getColor() == Colors.BLACK){
             // need to see if something in front because it can't be captured
-            if(board.isValidMove(from, nextPos = posDir(from, 3), curPiece) &&
-                    board.getPieceAt(nextPos) == null){
-                posMoves.add(nextPos);
-            }
-            // only if it doesn't have something in front of it can it move 2 time in front
-            if(board.getPieceAt(nextPos) == null &&
-                    board.isValidMove(from, nextPos = posDir(nextPos, 3), curPiece) &&
-                    board.getPieceAt(nextPos) == null && from.y == 7){
-                posMoves.add(nextPos);
+            Position forward1 = posDir(from, 3);
+            if(board.isValidMove(from, forward1, curPiece) &&
+                    board.getPieceAt(forward1) == null){
+                posMoves.add(forward1);
+
+                // only if it doesn't have something in front of it can it move 2 time in front
+                if (from.y == 7) {
+                    Position forward2 = posDir(forward1, 3);
+                    if(board.getPieceAt(forward2) == null &&
+                            board.isValidMove(from, forward2, curPiece)){
+                        posMoves.add(forward2);
+                    }
+                }
             }
 
             // see if there are pieces on the diagonal that can be captured
@@ -43,16 +49,19 @@ public class PawnMoveStrategy implements MoveStrategy{
 
 
         } else {
-            if(board.isValidMove(from, nextPos = posDir(from, 7), curPiece) &&
-                    board.getPieceAt(nextPos) == null){
-                posMoves.add(nextPos);
+            Position forward1 = posDir(from, 7);
+            if(board.isValidMove(from, forward1, curPiece) &&
+                    board.getPieceAt(forward1) == null){
+                posMoves.add(forward1);
 
-            }
-            // only if it doesn't have something in front of it can it move 2 time in front
-            if(board.getPieceAt(nextPos) == null &&
-                    board.isValidMove(from, nextPos = posDir(nextPos, 7), curPiece) &&
-                    board.getPieceAt(nextPos) == null && from.y == 2){
-                posMoves.add(nextPos);
+                // only if it doesn't have something in front of it can it move 2 time in front
+                if (from.y == 2) {
+                    Position forward2 = posDir(forward1, 7);
+                    if(board.getPieceAt(forward2) == null &&
+                            board.isValidMove(from, forward2, curPiece)){
+                        posMoves.add(forward2);
+                    }
+                }
             }
 
             // see diagonals
