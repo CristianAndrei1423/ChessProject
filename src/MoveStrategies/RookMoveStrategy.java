@@ -15,17 +15,14 @@ public class RookMoveStrategy implements MoveStrategy{
 
         int[] dirs = {1, 3, 5, 7};
 
-        for(int dir : dirs){
+        for(int i =0;i < 4; i++){
             Position p = from;
-            while(true){
-                p = posDir(p, dir);
-                if (!p.onBoard()) break;
+            p = posDir(p, dirs[i]);
+            while(p.onBoard()){
+                if (board.isValidMove(from, p, board.getPieceAt(from))) posMoves.add(p);
 
-                if (board.isValidMove(from, p, board.getPieceAt(from)))
-                    posMoves.add(p);
-
-                if (board.getPieceAt(p) != null)
-                    break;
+                if (board.getPieceAt(p) != null) break;
+                p = posDir(p, dirs[i]);
             }
         }
 

@@ -17,20 +17,14 @@ public class QueenMoveStrategy implements MoveStrategy{
 
         // see in one direction how much you can move in one direction
         // before it's invalid
-        for(int dir : dirs){
+        for(int i = 0; i < 8;i ++){
             Position p = from;
-            while(true){
-                p = posDir(p, dir);
+            p = posDir(p, dirs[i]);
+            while(p.onBoard()){
+                if (board.isValidMove(from, p, board.getPieceAt(from))) posMoves.add(p);
 
-                if (!p.onBoard()) break;
-
-                if (board.isValidMove(from, p, board.getPieceAt(from))) {
-                    posMoves.add(p);
-                }
-
-                if (board.getPieceAt(p) != null) {
-                    break;
-                }
+                if (board.getPieceAt(p) != null) break;
+                p = posDir(p, dirs[i]);
             }
         }
 

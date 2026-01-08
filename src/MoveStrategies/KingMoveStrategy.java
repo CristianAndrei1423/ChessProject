@@ -18,8 +18,8 @@ public class KingMoveStrategy implements MoveStrategy{
         Position prevPos;
 
         // only one step in each direction
-        for (int dir : dirs)
-            if (board.isValidMove(from, prevPos = posDir(from, dir), board.getPieceAt(from)))
+        for (int i = 0;i < 8;i ++)
+            if (board.isValidMove(from, prevPos = posDir(from, dirs[i]), board.getPieceAt(from)))
                 posMoves.add(prevPos);
 
         return posMoves;

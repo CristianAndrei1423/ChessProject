@@ -16,20 +16,16 @@ public class BishopMoveStrategy implements MoveStrategy{
 
         int[] dirs = {0, 2, 4, 6};
 
-        for(int dir : dirs){
+        for(int i = 0; i< 4;i ++){
             Position p = from;
-            while(true){
-                p = posDir(p, dir);
+            p = posDir(p, dirs[i]);
+            while(p.onBoard()){
+                if (board.isValidMove(from, p, board.getPieceAt(from))) posMoves.add(p);
 
-                if (!p.onBoard()) break;
+                // check if there is something there
+                if (board.getPieceAt(p) != null) break;
 
-                if (board.isValidMove(from, p, board.getPieceAt(from))) {
-                    posMoves.add(p);
-                }
-
-                if (board.getPieceAt(p) != null) {
-                    break;
-                }
+                p = posDir(p, dirs[i]);
             }
         }
 
