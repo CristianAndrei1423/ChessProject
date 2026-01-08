@@ -112,7 +112,7 @@ public class Board {
                                     pair.getValue().getColor(), pair.getValue().getPosition());
                             // update in Player owned pieces
                             for(ChessPair<Position, Piece> pairs : player.getOwnedPieces())
-                                if(pairs.equals(pair))
+                                if(pairs.getKey().equals(pair.getKey()))
                                     pairs.setValue(Queen);
 
                             pair.setValue(Queen);
@@ -126,7 +126,7 @@ public class Board {
 
                             // update in Player owned pieces
                             for(ChessPair<Position, Piece> pairs : player.getOwnedPieces())
-                                if(pairs.equals(pair))
+                                if(pairs.getKey().equals(pair.getKey()))
                                     pairs.setValue(Queen);
 
                             pair.setValue(Queen);
@@ -184,145 +184,7 @@ public class Board {
         return null;
     }
 
-    public boolean isValidMove(Position from, Position to, Piece piece){
-        // first check if in-bounds
-        if((to.x >= 'A' && to.x <= 'H') && (to.y >= 1 && to.y <= 8) && (getPieceAt(from) == null ||
-                getPieceAt(from).equals(piece))){
 
-            // check if I get checked if I move the piece
-            if(piece instanceof King) {
-                // check if it puts itself in check
-                int[] dirs = {0, 1, 2, 3, 4, 5, 6, 7};
-                List<Piece> intersPieces = Piece.axesInters(this, to, dirs);
-
-                for (int i = 0; i < 8; i++) {
-                    Piece ps = intersPieces.get(i);
-
-                    if (ps != null && ps.equals(piece)) {
-                        List<Piece> behindList = Piece.axesInters(this, from, new int[]{i});
-                        if (!behindList.isEmpty()) {
-                            ps = behindList.getFirst();
-                            if (ps != null && ps.getColor() != piece.getColor()) {
-                                if (i % 2 == 0) {
-                                    if (ps instanceof Queen || ps instanceof Bishop) return false;
-                                } else if (ps instanceof Queen || ps instanceof Rook) return false;
-                            }
-                        }
-                        continue;
-                    }
-
-                    if(ps != null && ps.getColor() != piece.getColor()){
-                        if(ps instanceof King){
-                            // check if the kings have enough distance between one another
-                            if(Position.trajectory(ps.getPosition(), to).size() <= 2)
-                                return false;
-                        }
-                        else {
-                            // checks the possible moves for each of the opponent's pieces
-                            if(ps.checkForCheck(this, to))
-                                return false;
-
-                        }
-                    }
-                }
-
-                // check for horses too
-                for(ChessPair<Position, Piece> ps : pieces){
-                    if(ps.getValue() instanceof Knight && ps.getValue().getColor() != piece.getColor()){
-                        if(ps.getValue().checkForCheck(this, to))
-                            return false;
-                    }
-                }
-
-            }
-            else {
-                // check if I move this piece, the king gets checked
-                // first get all pieces from raytracing
-                int[] dirs = {0, 1, 2, 3, 4, 5, 6, 7};
-
-                List<Piece> intersPieces = Piece.axesInters(this, getKingPos(piece.getColor()),
-                        dirs);
-
-                if (intersPieces.contains(piece)) {
-                    // find direction
-                    int indDir = 0;
-                    for (Piece ps : intersPieces) {
-                        if (ps != null && ps.equals(piece))
-                            break;
-                        indDir++;
-                    }
-
-                    // make a direction then see what's in the back of the piece
-                    int[] auxDir = {indDir};
-                    List<Piece> piesaDinSpate = Piece.axesInters(this, from, auxDir);
-
-                    if (!piesaDinSpate.isEmpty() && piesaDinSpate.getFirst() != null) {
-
-                        Piece piesadinSpate = piesaDinSpate.getFirst();
-
-                        if(piesadinSpate.getColor() != piece.getColor()) {
-
-                            if (indDir == 0 || indDir == 2 || indDir == 4 || indDir == 6) {
-                                if (piesadinSpate instanceof Bishop || piesadinSpate instanceof Queen)
-                                    return false;
-                            } else if (piesadinSpate instanceof Rook) {
-                                return false;
-                            }
-                        }
-                    }
-                }
-            }
-            // check if already in check
-            List<ChessPair<Position, Piece>> checkingPieces = new ArrayList<>();
-
-            for(ChessPair<Position, Piece> ps : pieces)
-                if(ps.getValue().getColor() != piece.getColor())
-                    if(ps.getValue().checkForCheck(this, getKingPos(piece.getColor())))
-                        checkingPieces.add(ps);
-
-            if(!checkingPieces.isEmpty()){
-                if(checkingPieces.size()>=2){
-                    // here you can only move the king
-                    if(!(piece instanceof King))
-                        return false;
-                }
-                else{
-                    // check if the king wants to move in an attacked square
-                    Position kingPos = getKingPos(piece.getColor());
-                    Position attackingPiecePos = checkingPieces.getFirst().getKey();
-                    Piece attackingPiece = checkingPieces.getFirst().getValue();
-
-                    if (attackingPiece instanceof Knight) {
-                        if (!to.equals(attackingPiecePos) && !(piece instanceof King)) {
-                            return false;
-                        }
-                    } else {
-                        if(!Position.trajectory(attackingPiecePos, kingPos).contains(to) && !(piece instanceof King))
-                            return false;
-                    }
-                }
-            }
-
-            // if something is already there :
-            if(getPieceAt(to) != null) {
-                // check if the piece is a pawn because it can't capture in front
-
-                if(piece instanceof Pawn){
-                    int dir = Piece.dirFromPositions(from, to);
-
-                    if(piece.getColor() == Colors.BLACK && dir == 3)
-                        return false;
-
-                    if(piece.getColor() == Colors.WHITE && dir == 7)
-                        return false;
-                }
-                return getPieceAt(to).getColor() != piece.getColor();
-            }
-
-            return true;
-        }
-        return false;
-    }
 
     public Position getKingPos(Colors color){
         for(ChessPair<Position, Piece> cp : pieces){
@@ -334,6 +196,90 @@ public class Board {
             }
         }
         return null;
+    }
+
+    public boolean isValidMove(Position from, Position to, Piece piece) {
+        // redone this function from scratch
+        // now simulate the move being made and then see if it's valid
+
+        // first check if the move and piece exist
+        if (piece == null) return false;
+        if (!to.onBoard()) return false;
+
+        // check if it's your piece
+        Piece target = getPieceAt(to);
+        if (target != null && target.getColor() == piece.getColor()) {
+            return false;
+        }
+
+        // temporary move on board
+        Position originalPos = piece.getPosition();
+        ChessPair<Position, Piece> originalPair = new ChessPair<>(from, piece);
+        ChessPair<Position, Piece> targetPair = null;
+
+        // temp remove the piece from its current position
+        boolean removed = false;
+        for (ChessPair<Position, Piece> cp : pieces) {
+            if (cp.getKey().equals(from) && cp.getValue().equals(piece)) {
+                pieces.remove(cp);
+                // reference for later
+                originalPair = cp;
+                removed = true;
+                break;
+            }
+        }
+        // redundant but let's be sure
+        if (!removed) return false;
+
+        // if this is a capture remove the captured piece temporarily
+        if (target != null) {
+            for (ChessPair<Position, Piece> cp : pieces) {
+                if (cp.getKey().equals(to)) {
+                    pieces.remove(cp);
+                    // reference for later
+                    targetPair = cp;
+                    break;
+                }
+            }
+        }
+
+        // place the moving piece at the new position
+        piece.setPosition(to);
+        pieces.add(new ChessPair<>(to, piece));
+
+        // check if the king is safe after this move
+        boolean isKingSafe = true;
+        Position kingPos = getKingPos(piece.getColor());
+
+        //check if it's under attack
+        if (kingPos != null) {
+            for (ChessPair<Position, Piece> cp : pieces) {
+                Piece enemy = cp.getValue();
+                // if it's an enemy piece, check if it attacks the king
+                if (enemy.getColor() != piece.getColor()) {
+                    if (enemy.checkForCheck(this, kingPos)) {
+                        // it is checked
+                        isKingSafe = false;
+                        break;
+                    }
+                }
+            }
+        }
+        // revert the board state
+
+        // remove the piece from the treeset
+        pieces.remove(new ChessPair<>(to, piece));
+
+        // restore position
+        piece.setPosition(originalPos);
+
+        // add back to from
+        pieces.add(originalPair);
+
+        // add back the captured piece (if any)
+        if (targetPair != null) pieces.add(targetPair);
+
+        return isKingSafe;
     }
 
     // factory pattern

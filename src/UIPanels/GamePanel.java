@@ -43,7 +43,7 @@ public class GamePanel extends JPanel implements GameObserver {
         setLayout(new BorderLayout());
         setBackground(new Color(0, 0, 0));
 
-        // left sidebar : move History ------------------------------------
+        // left sidebar : move history ------------------------------------
         JPanel historyPanel = new JPanel(new BorderLayout());
         historyPanel.setBackground(new Color(30, 40, 60));
         historyPanel.setPreferredSize(new Dimension(200, 0));
@@ -61,7 +61,7 @@ public class GamePanel extends JPanel implements GameObserver {
         // ------------------------------------------------------------------------
 
         // make the board ---------------------------------------------------------
-        JPanel boardWrapper = new JPanel(new GridBagLayout()); // Centers the board
+        JPanel boardWrapper = new JPanel(new GridBagLayout());
         boardWrapper.setBackground(new Color(20, 25, 40));
 
         JPanel board = new JPanel(new GridLayout(8, 8));
@@ -73,7 +73,6 @@ public class GamePanel extends JPanel implements GameObserver {
         selectedPiece = null;
         selectedButton = null;
 
-        // Swing Grid Layout: Row 0 is TOP, Row 7 is BOTTOM
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 JButton square = new JButton();
@@ -83,10 +82,8 @@ public class GamePanel extends JPanel implements GameObserver {
 
                 square.setBorderPainted(false);
                 square.setFocusPainted(false);
-                // square.setFont(new Font("SansSerif", Font.PLAIN, 40));
 
                 // store the coordinates inside the button
-                // x = column (visual), y = row (visual)
                 square.putClientProperty("x", col);
                 square.putClientProperty("y", row);
 
@@ -128,15 +125,12 @@ public class GamePanel extends JPanel implements GameObserver {
 
         JButton btnResign = createButton("Resign", new Color(239, 68, 68));
         JButton btnSave = createButton("Save & Exit", Color.ORANGE);
-        //JButton btnBack = createButton("Back to Menu", Color.GRAY);
 
         btnSave.addActionListener(new SaveAndExitListener());
         btnResign.addActionListener(new ForfeitListener());
 
-        // Full width buttons
         btnResign.setMaximumSize(new Dimension(200, 40));
         btnSave.setMaximumSize(new Dimension(200, 40));
-        //btnBack.setMaximumSize(new Dimension(200, 40));
 
         endOfGameLabelState = new JLabel();
         endOfGameLabelState.setVisible(false);
@@ -147,8 +141,6 @@ public class GamePanel extends JPanel implements GameObserver {
         rightPanel.add(btnResign);
         rightPanel.add(Box.createVerticalStrut(10));
         rightPanel.add(btnSave);
-        //rightPanel.add(Box.createVerticalStrut(10));
-        //rightPanel.add(btnBack);
 
         //------------------------------------------------------------------------
 
@@ -241,9 +233,7 @@ public class GamePanel extends JPanel implements GameObserver {
                 if(!endOfGameLabelState.isVisible())
                     Main.getChessGame().handleEndGame(currentGame);
             }
-
         }
-
     }
 
     private class SaveAndExitListener implements ActionListener {
@@ -397,6 +387,8 @@ public class GamePanel extends JPanel implements GameObserver {
                 }
             }
         }
+        // for testing :
+        // System.out.println( currentGame.getBoard().toString(Colors.WHITE));
     }
 
     public void updateCapturedPieces(){

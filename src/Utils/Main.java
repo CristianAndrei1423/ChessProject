@@ -44,7 +44,7 @@ public class Main {
         // read from input files
         // initialize colections of users and games
 
-        Path path = Path.of("src", "Teste", "TesteIndividuale", "games.json");
+        Path path = Path.of("src", "Teste", "TestOutputStd", "games.json");
         System.out.println("Path of games : " + path.toAbsolutePath());
 
         gameMap = JsonReaderUtil.readGamesAsMap(path);
@@ -58,7 +58,7 @@ public class Main {
 
         System.out.println("Game size = " + lastGameId);
 
-        path = Path.of("src", "Teste", "TesteIndividuale", "accounts.json");
+        path = Path.of("src", "Teste", "TestOutputStd", "accounts.json");
         System.out.println("Path of accounts : " + path.toAbsolutePath());
         userList = JsonReaderUtil.readAccounts(path);
 
@@ -69,7 +69,7 @@ public class Main {
                     Game game = gameMap.get(gid);
                     user.addGame(game);
 
-                    // pune pentru fiecare user owned pieces
+                    // put for each user it's owned pieces
                     if (game.player.pieceColor == Colors.WHITE) {
                         for (ChessPair<Position, Piece> cp : game.board.pieces) {
                             if (cp.getValue().getColor() == Colors.WHITE) {
@@ -94,7 +94,8 @@ public class Main {
                         Board newBoard = new Board();
                         newBoard.initialize();
 
-                        List<Piece> pieseLipsa = getNonCommonPieces(new Board(game.board.pieces), newBoard);
+                        // pass a copy of the pieces treeset so that it doesn't modify it in the board
+                        List<Piece> pieseLipsa = getNonCommonPieces(new Board(new TreeSet<>(game.board.pieces)), newBoard);
                         for (Piece p : pieseLipsa) {
                             if (p.getColor() == game.player.pieceColor) {
                                 game.opponent.addCapturedPiece(p);

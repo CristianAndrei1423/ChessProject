@@ -63,6 +63,7 @@ public class MainFrame extends JFrame {
                 GamePanel.updatePiecesVisual(game.getBoard());
                 System.out.println("Game continued !");
                 GameExplorerPanel.gameToBeContinued = null;
+                game.addObserver(GamePanel);
                 GamePanel.updateHistoryArea();
                 GamePanel.updateCapturedPieces();
             }
