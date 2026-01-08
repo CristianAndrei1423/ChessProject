@@ -19,7 +19,7 @@ class LoginPanel extends JPanel {
         this.frame = frame;
         // on the left
         JPanel leftPanel = new JPanel();
-        leftPanel.setBackground(PanelColors.THEME_DARK_BLUE);
+        leftPanel.setBackground(PanelColors.DARKER_BLUE);
         leftPanel.setLayout(new GridBagLayout());
         JLabel title = new JLabel("Chess Master");
         title.setFont(new Font("Serif", Font.BOLD, 40));
@@ -28,12 +28,12 @@ class LoginPanel extends JPanel {
 
         // on the right
         JPanel rightPanel = new JPanel();
-        rightPanel.setBackground(Color.BLACK);
+        rightPanel.setBackground(PanelColors.THEME_DARK_BLUE);
         rightPanel.setLayout(new GridBagLayout());
 
         JPanel form = new JPanel();
         form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
-        form.setBackground(Color.BLACK);
+        form.setBackground(PanelColors.THEME_DARK_BLUE);
 
         JLabel lblWelcome = new JLabel("Welcome Back");
         lblWelcome.setForeground(Color.BLACK);
@@ -45,7 +45,7 @@ class LoginPanel extends JPanel {
         JButton btnLogin = createButton("Sign In", Color.GREEN);
         btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JButton btnSignUp = createButton("Sign Up", new Color(73, 255, 0));
+        JButton btnSignUp = createButton("Sign Up", Color.GREEN);
         btnSignUp.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         btnLogin.addActionListener(new LoginHandler());
@@ -58,12 +58,15 @@ class LoginPanel extends JPanel {
 
         JLabel emailAddress = new JLabel("Email Address");
         emailAddress.setAlignmentX(Component.CENTER_ALIGNMENT);
+        emailAddress.setForeground(Color.BLACK);
 
         JLabel pass = new JLabel("Password");
         pass.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pass.setForeground(Color.BLACK);
 
         JLabel or = new JLabel("----------Or----------");
         or.setAlignmentX(Component.CENTER_ALIGNMENT);
+        or.setForeground(Color.BLACK);
 
         incorrectPass = new JLabel("Incorrect Password / Email");
         incorrectPass.setAlignmentX(Component.CENTER_ALIGNMENT);

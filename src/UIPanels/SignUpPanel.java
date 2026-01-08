@@ -19,7 +19,7 @@ public class SignUpPanel extends JPanel {
         this.frame = frame;
         // on the left
         JPanel leftPanel = new JPanel();
-        leftPanel.setBackground(PanelColors.THEME_DARK_BLUE);
+        leftPanel.setBackground(PanelColors.DARKER_BLUE);
         leftPanel.setLayout(new GridBagLayout());
         JLabel title = new JLabel("Chess Master");
         title.setFont(new Font("Serif", Font.BOLD, 40));
@@ -28,12 +28,12 @@ public class SignUpPanel extends JPanel {
 
         // on the right
         JPanel rightPanel = new JPanel();
-        rightPanel.setBackground(Color.WHITE);
+        rightPanel.setBackground(PanelColors.THEME_DARK_BLUE);
         rightPanel.setLayout(new GridBagLayout());
 
         JPanel form = new JPanel();
         form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
-        form.setBackground(Color.WHITE);
+        form.setBackground(PanelColors.THEME_DARK_BLUE);
 
         JLabel lblWelcome = new JLabel("Make an account:");
         lblWelcome.setForeground(Color.BLACK);
@@ -45,10 +45,10 @@ public class SignUpPanel extends JPanel {
         passField.setMaximumSize(new Dimension(200, 30));
 
 
-        JButton btnSignUp = createButton("Sign Up", new Color(31, 220, 105));
+        JButton btnSignUp = createButton("Sign Up", Color.GREEN);
         btnSignUp.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JButton btnLogin = createButton("Already have an account?", new Color(73, 255, 0));
+        JButton btnLogin = createButton("Already have an account?", Color.GREEN);
         btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         btnSignUp.addActionListener(new ActionListener() {
@@ -75,12 +75,15 @@ public class SignUpPanel extends JPanel {
 
         JLabel emailAddress = new JLabel("Email Address");
         emailAddress.setAlignmentX(Component.CENTER_ALIGNMENT);
+        emailAddress.setForeground(Color.BLACK);
 
         JLabel pass = new JLabel("Password");
         pass.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pass.setForeground(Color.BLACK);
 
         JLabel or = new JLabel("----------Or----------");
         or.setAlignmentX(Component.CENTER_ALIGNMENT);
+        or.setForeground(Color.BLACK);
 
         alreadyInUse = new JLabel("Email already exists");
         alreadyInUse.setForeground(Color.red);
