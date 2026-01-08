@@ -28,4 +28,13 @@ public class Move {
         return from.toString() + " -> " + to.toString();
     }
 
+    @Override
+    public boolean equals(Object obj){
+        if(obj instanceof Move) {
+            Move move = (Move) obj;
+            return this.from.equals(move.from) && this.to.equals(move.to);
+        }
+        return false;
+    }
+
 }

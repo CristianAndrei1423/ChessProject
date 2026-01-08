@@ -93,12 +93,15 @@ public class Game {
     }
 
     private boolean last3MovesSame() {
-        if(moveList.size() < 6)
+        if(moveList.size() < 12)
             return false;
 
         int n = moveList.size();
-        for(int i = 0 ;i<3;i++){
-            if(moveList.get(n-i-1) != moveList.get(n-i-3))
+        for(int i = 0 ;i<8;i++){
+            Move m1 = moveList.get(n-i-1);
+            Move m2 = moveList.get(n-i-5);
+
+            if(!m1.equals(m2))
                 return false;
         }
         return true;
@@ -111,6 +114,11 @@ public class Game {
         Player o = (ps.getColor() == player.pieceColor ? opponent : player);
 
         p.makeMove(move.getFrom(), move.getTo(), board, this, o);
+
+        if(last3MovesSame()){
+            System.out.println("Last 3 moves the same");
+            handleEndOfGame(0);
+        }
     }
 
     public boolean runForComputer(){
@@ -179,13 +187,6 @@ public class Game {
                 // draw
                 handleEndOfGame(0);
             }
-            return false;
-        }
-
-        // check if last 3 moves were the same
-        if(last3MovesSame()){
-            System.out.println("Last 3 moves the same");
-            handleEndOfGame(0);
             return false;
         }
 
