@@ -100,11 +100,14 @@ public class GamePanel extends JPanel implements GameObserver {
         // ------------------------------------------------------------------------
 
         // right panel : captured pieces ------------------------------------
-        JPanel rightPanel = new JPanel();
-        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+        JPanel rightPanel = new JPanel(new BorderLayout()); // Use BorderLayout to allow pinning to bottom
         rightPanel.setBackground(new Color(30, 40, 60));
         rightPanel.setPreferredSize(new Dimension(220, 0));
         rightPanel.setBorder(new EmptyBorder(20, 15, 20, 15));
+
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        infoPanel.setBackground(new Color(30, 40, 60));
 
         JLabel lblCap = new JLabel("Captured Pieces");
         lblCap.setForeground(Color.WHITE);
@@ -115,13 +118,26 @@ public class GamePanel extends JPanel implements GameObserver {
         capturedPiecesWhite.setAlignmentX(Component.LEFT_ALIGNMENT);
         capturedPiecesBlack.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        rightPanel.add(lblCap);
-        rightPanel.add(new JLabel("White captured pieces : "));
-        rightPanel.add(capturedPiecesWhite);
-        rightPanel.add(Box.createVerticalStrut(10));
-        rightPanel.add(new JLabel("Black captured pieces : "));
-        rightPanel.add(capturedPiecesBlack);
-        rightPanel.add(Box.createVerticalStrut(180)); // Spacer
+        endOfGameLabelState = new JLabel();
+        endOfGameLabelState.setVisible(false);
+        endOfGameLabelState.setForeground(Color.YELLOW);
+
+        infoPanel.add(lblCap);
+        infoPanel.add(Box.createVerticalStrut(10));
+        infoPanel.add(new JLabel("White captured pieces : "));
+        infoPanel.add(capturedPiecesWhite);
+        infoPanel.add(Box.createVerticalStrut(10));
+        infoPanel.add(new JLabel("Black captured pieces : "));
+        infoPanel.add(capturedPiecesBlack);
+        infoPanel.add(Box.createVerticalGlue());
+        infoPanel.add(endOfGameLabelState);
+        infoPanel.add(Box.createVerticalStrut(10));
+
+        rightPanel.add(infoPanel, BorderLayout.CENTER);
+
+        JPanel btnPanel = new JPanel();
+        btnPanel.setLayout(new GridLayout(2, 1, 0, 10));
+        btnPanel.setBackground(new Color(30, 40, 60));
 
         JButton btnResign = createButton("Resign", new Color(239, 68, 68));
         JButton btnSave = createButton("Save & Exit", Color.ORANGE);
@@ -129,18 +145,10 @@ public class GamePanel extends JPanel implements GameObserver {
         btnSave.addActionListener(new SaveAndExitListener());
         btnResign.addActionListener(new ForfeitListener());
 
-        btnResign.setMaximumSize(new Dimension(200, 40));
-        btnSave.setMaximumSize(new Dimension(200, 40));
+        btnPanel.add(btnResign);
+        btnPanel.add(btnSave);
 
-        endOfGameLabelState = new JLabel();
-        endOfGameLabelState.setVisible(false);
-        endOfGameLabelState.setForeground(Color.YELLOW);
-
-        rightPanel.add(endOfGameLabelState);
-        rightPanel.add(Box.createVerticalStrut(10));
-        rightPanel.add(btnResign);
-        rightPanel.add(Box.createVerticalStrut(10));
-        rightPanel.add(btnSave);
+        rightPanel.add(btnPanel, BorderLayout.SOUTH);
 
         //------------------------------------------------------------------------
 
