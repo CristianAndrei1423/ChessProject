@@ -14,11 +14,12 @@ class LoginPanel extends JPanel {
     JLabel incorrectPass;
     MainFrame frame;
     public LoginPanel(MainFrame frame) {
+
         setLayout(new GridLayout(1, 2));
         this.frame = frame;
         // on the left
         JPanel leftPanel = new JPanel();
-        leftPanel.setBackground(new Color(30, 40, 60));
+        leftPanel.setBackground(PanelColors.THEME_DARK_BLUE);
         leftPanel.setLayout(new GridBagLayout());
         JLabel title = new JLabel("Chess Master");
         title.setFont(new Font("Serif", Font.BOLD, 40));
@@ -27,12 +28,12 @@ class LoginPanel extends JPanel {
 
         // on the right
         JPanel rightPanel = new JPanel();
-        rightPanel.setBackground(new Color(255, 255 ,255));
+        rightPanel.setBackground(Color.BLACK);
         rightPanel.setLayout(new GridBagLayout());
 
         JPanel form = new JPanel();
-        form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS)); // ??
-        form.setBackground(new Color(255, 255 ,255));
+        form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
+        form.setBackground(Color.BLACK);
 
         JLabel lblWelcome = new JLabel("Welcome Back");
         lblWelcome.setForeground(Color.BLACK);
@@ -41,7 +42,7 @@ class LoginPanel extends JPanel {
         emailField = new JTextField();
         passField = new JPasswordField();
 
-        JButton btnLogin = createButton("Sign In", new Color(31, 220, 105));
+        JButton btnLogin = createButton("Sign In", Color.GREEN);
         btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JButton btnSignUp = createButton("Sign Up", new Color(73, 255, 0));

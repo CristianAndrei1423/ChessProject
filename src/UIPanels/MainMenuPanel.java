@@ -16,14 +16,14 @@ public class MainMenuPanel extends JPanel {
     public MainMenuPanel(MainFrame frame) {
         setLayout(new GridBagLayout());
         this.frame = frame;
-        setBackground(new Color(20, 25, 40));
+        setBackground(PanelColors.DARKER_BLUE);
 
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
-        content.setBackground(new Color(20, 25, 40));
+        content.setBackground(PanelColors.DARKER_BLUE);
 
         JPanel statsPanel = new JPanel(new GridLayout(1, 2, 10, 0));
-        statsPanel.setBackground(new Color(20, 25, 40));
+        statsPanel.setBackground(PanelColors.DARKER_BLUE);
 
         TotPoints = new JLabel("Total points :");
         ActiveGames = new JLabel("Active Games :");
@@ -31,9 +31,9 @@ public class MainMenuPanel extends JPanel {
         statsPanel.add(TotPoints);
         statsPanel.add(ActiveGames);
 
-        JButton btnNew = createMenuButton("New Game", "Start match vs Computer",new Color(34, 197, 94));
-        JButton btnContinue = createMenuButton("Continue Game", "Resume a game in progress", new Color(0, 59, 255));
-        JButton btnLogout = createMenuButton("Logout", "Return to login", new Color(255, 0, 0));
+        JButton btnNew = createMenuButton("New Game", "Start match vs Computer",Color.GREEN);
+        JButton btnContinue = createMenuButton("Continue Game", "Resume a game in progress", Color.BLUE);
+        JButton btnLogout = createMenuButton("Logout", "Return to login", Color.RED);
 
         btnLogout.addActionListener(new ActionListener() {
             @Override

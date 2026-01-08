@@ -35,7 +35,7 @@ public class GameExplorerPanel extends JPanel {
 
         // left side -> Explorer panel --------------------------------------
         JPanel explorerPanel = new JPanel(new BorderLayout());
-        explorerPanel.setBackground(new Color(30, 40, 60));
+        explorerPanel.setBackground(PanelColors.THEME_DARK_BLUE);
         explorerPanel.setPreferredSize(new Dimension(250, 0));
         explorerPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
@@ -47,17 +47,17 @@ public class GameExplorerPanel extends JPanel {
 
         gamesButtonPanel = new JPanel();
         gamesButtonPanel.setLayout(new BoxLayout(gamesButtonPanel, BoxLayout.Y_AXIS));
-        gamesButtonPanel.setBackground(new Color(30, 40, 60));
+        gamesButtonPanel.setBackground(PanelColors.THEME_DARK_BLUE);
 
         JScrollPane scrollPane = new JScrollPane(gamesButtonPanel);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.getViewport().setBackground(new Color(30, 40, 60));
+        scrollPane.getViewport().setBackground(PanelColors.THEME_DARK_BLUE);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         explorerPanel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel buttonsPanel = new JPanel(new GridLayout(2, 1, 0, 10));
-        buttonsPanel.setBackground(new Color(30, 40, 60));
+        buttonsPanel.setBackground(PanelColors.THEME_DARK_BLUE);
         buttonsPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
         JButton btnBack = new JButton("Back to Menu");
@@ -99,7 +99,7 @@ public class GameExplorerPanel extends JPanel {
 
 
         JPanel rightPanel = new JPanel(new BorderLayout());
-        rightPanel.setBackground(new Color(20, 25, 40));
+        rightPanel.setBackground(PanelColors.DARKER_BLUE);
         // -------------------------------------------------------------
 
         // top label (Opponent)
@@ -111,7 +111,7 @@ public class GameExplorerPanel extends JPanel {
 
         // board
         JPanel boardWrapper = new JPanel(new GridBagLayout());
-        boardWrapper.setBackground(new Color(20, 25, 40));
+        boardWrapper.setBackground(PanelColors.DARKER_BLUE);
 
         JPanel board = new JPanel(new GridLayout(8, 8));
         board.setPreferredSize(new Dimension(500, 500));
@@ -182,7 +182,7 @@ public class GameExplorerPanel extends JPanel {
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn.setMaximumSize(new Dimension(220, 60)); // Fixed width, taller for 2 lines
         btn.setPreferredSize(new Dimension(220, 60));
-        btn.setBackground(new Color(45, 55, 75));
+        btn.setBackground(new Color(44, 54, 73));
         btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false);
         btn.setFont(new Font("SansSerif", Font.PLAIN, 14));

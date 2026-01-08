@@ -19,7 +19,7 @@ public class SignUpPanel extends JPanel {
         this.frame = frame;
         // on the left
         JPanel leftPanel = new JPanel();
-        leftPanel.setBackground(new Color(30, 40, 60));
+        leftPanel.setBackground(PanelColors.THEME_DARK_BLUE);
         leftPanel.setLayout(new GridBagLayout());
         JLabel title = new JLabel("Chess Master");
         title.setFont(new Font("Serif", Font.BOLD, 40));
@@ -28,12 +28,12 @@ public class SignUpPanel extends JPanel {
 
         // on the right
         JPanel rightPanel = new JPanel();
-        rightPanel.setBackground(new Color(255, 255 ,255));
+        rightPanel.setBackground(Color.WHITE);
         rightPanel.setLayout(new GridBagLayout());
 
         JPanel form = new JPanel();
-        form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS)); // ??
-        form.setBackground(new Color(255, 255 ,255));
+        form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
+        form.setBackground(Color.WHITE);
 
         JLabel lblWelcome = new JLabel("Make an account:");
         lblWelcome.setForeground(Color.BLACK);

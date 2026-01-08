@@ -41,11 +41,11 @@ public class GamePanel extends JPanel implements GameObserver {
 
         // initialize the GamePanel
         setLayout(new BorderLayout());
-        setBackground(new Color(0, 0, 0));
+        setBackground(Color.BLACK);
 
         // left sidebar : move history ------------------------------------
         JPanel historyPanel = new JPanel(new BorderLayout());
-        historyPanel.setBackground(new Color(30, 40, 60));
+        historyPanel.setBackground(PanelColors.THEME_DARK_BLUE);
         historyPanel.setPreferredSize(new Dimension(200, 0));
         historyPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
@@ -54,7 +54,7 @@ public class GamePanel extends JPanel implements GameObserver {
         historyPanel.add(histLabel, BorderLayout.NORTH);
 
         historyArea = new JTextArea("Game Started");
-        historyArea.setBackground(new Color(30, 40, 60));
+        historyArea.setBackground(PanelColors.THEME_DARK_BLUE);
         historyArea.setForeground(new Color(148, 163, 184));
         historyPanel.add(historyArea, BorderLayout.CENTER);
 
@@ -62,7 +62,7 @@ public class GamePanel extends JPanel implements GameObserver {
 
         // make the board ---------------------------------------------------------
         JPanel boardWrapper = new JPanel(new GridBagLayout());
-        boardWrapper.setBackground(new Color(20, 25, 40));
+        boardWrapper.setBackground(PanelColors.DARKER_BLUE);
 
         JPanel board = new JPanel(new GridLayout(8, 8));
         board.setPreferredSize(new Dimension(500, 500));
@@ -101,13 +101,13 @@ public class GamePanel extends JPanel implements GameObserver {
 
         // right panel : captured pieces ------------------------------------
         JPanel rightPanel = new JPanel(new BorderLayout()); // Use BorderLayout to allow pinning to bottom
-        rightPanel.setBackground(new Color(30, 40, 60));
+        rightPanel.setBackground(PanelColors.THEME_DARK_BLUE);
         rightPanel.setPreferredSize(new Dimension(220, 0));
         rightPanel.setBorder(new EmptyBorder(20, 15, 20, 15));
 
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-        infoPanel.setBackground(new Color(30, 40, 60));
+        infoPanel.setBackground(PanelColors.THEME_DARK_BLUE);
 
         JLabel lblCap = new JLabel("Captured Pieces");
         lblCap.setForeground(Color.WHITE);
@@ -137,9 +137,9 @@ public class GamePanel extends JPanel implements GameObserver {
 
         JPanel btnPanel = new JPanel();
         btnPanel.setLayout(new GridLayout(2, 1, 0, 10));
-        btnPanel.setBackground(new Color(30, 40, 60));
+        btnPanel.setBackground(PanelColors.THEME_DARK_BLUE);
 
-        JButton btnResign = createButton("Resign", new Color(239, 68, 68));
+        JButton btnResign = createButton("Resign", Color.RED);
         JButton btnSave = createButton("Save & Exit", Color.ORANGE);
 
         btnSave.addActionListener(new SaveAndExitListener());

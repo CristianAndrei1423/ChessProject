@@ -18,11 +18,11 @@ public class GameMakePanel extends JPanel implements GameMakeObserver {
 
     public GameMakePanel() {
         setLayout(new GridBagLayout());
-        setBackground(new Color(20, 25, 40));
+        setBackground(PanelColors.DARKER_BLUE);
 
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
-        content.setBackground(new Color(20, 25, 40));
+        content.setBackground(PanelColors.DARKER_BLUE);
 
         alias = new JTextArea();
 
