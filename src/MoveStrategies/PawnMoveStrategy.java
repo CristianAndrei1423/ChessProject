@@ -23,12 +23,14 @@ public class PawnMoveStrategy implements MoveStrategy{
             if(board.isValidMove(from, nextPos = posDir(from, 3), curPiece) &&
                     board.getPieceAt(nextPos) == null){
                 posMoves.add(nextPos);
-                // only if it can move 1 step in front, can it move 2 steps in front
-                if(board.isValidMove(from, nextPos = posDir(nextPos, 3), curPiece) &&
-                        board.getPieceAt(nextPos) == null && from.y == 7){
-                    posMoves.add(nextPos);
-                }
             }
+            // only if it doesn't have something in front of it can it move 2 time in front
+            if(board.getPieceAt(nextPos) == null &&
+                    board.isValidMove(from, nextPos = posDir(nextPos, 3), curPiece) &&
+                    board.getPieceAt(nextPos) == null && from.y == 7){
+                posMoves.add(nextPos);
+            }
+
             // see if there are pieces on the diagonal that can be captured
             Piece ps;
             if((ps = board.getPieceAt(nextPos = posDir(from, 2))) != null &&
@@ -44,11 +46,13 @@ public class PawnMoveStrategy implements MoveStrategy{
             if(board.isValidMove(from, nextPos = posDir(from, 7), curPiece) &&
                     board.getPieceAt(nextPos) == null){
                 posMoves.add(nextPos);
-                // only if it can move 1 step in front, can it move 2 steps in front
-                if(board.isValidMove(from, nextPos = posDir(nextPos, 7), curPiece) &&
-                        board.getPieceAt(nextPos) == null && from.y == 2){
-                    posMoves.add(nextPos);
-                }
+
+            }
+            // only if it doesn't have something in front of it can it move 2 time in front
+            if(board.getPieceAt(nextPos) == null &&
+                    board.isValidMove(from, nextPos = posDir(nextPos, 7), curPiece) &&
+                    board.getPieceAt(nextPos) == null && from.y == 2){
+                posMoves.add(nextPos);
             }
 
             // see diagonals
