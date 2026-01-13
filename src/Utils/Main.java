@@ -187,6 +187,7 @@ public class Main {
 
         userList.add(newUser);
         currentUser = newUser;
+        write();
         return newUser;
     }
 

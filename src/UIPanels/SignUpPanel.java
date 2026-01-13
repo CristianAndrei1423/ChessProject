@@ -56,7 +56,7 @@ public class SignUpPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 // here test email/password coresponds to user
                 User user;
-                user = Main.getChessGame().newAccount(emailField.getText(), Arrays.toString(passField.getPassword()), 0);
+                user = Main.getChessGame().newAccount(emailField.getText(), String.valueOf(passField.getPassword()), 0);
                 if(user == null)
                 {
                     alreadyInUse.setVisible(true);
